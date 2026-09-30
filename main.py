@@ -1,4 +1,4 @@
-# main.py (Final Fixed: Active Groq Model + Bulletproof Firebase)
+# main.py (Debug-Ready: Active Groq Model + Bulletproof Firebase + Exposed Errors)
 import os
 import json
 from typing import Optional
@@ -32,7 +32,7 @@ if not firebase_admin._apps:
         print(f"⚠️ Firebase Admin initialization failed: {e}")
 
 # ===== FASTAPI APP =====
-app = FastAPI(title="Createra AI Backend", version="3.4.0")
+app = FastAPI(title="Createra AI Backend", version="3.5.0-DEBUG")
 
 app.add_middleware(
     CORSMiddleware,
@@ -118,13 +118,13 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
             file_info = f"\n\n[SYSTEM NOTE: User has attached a file named '{request.attachment.name}' of type '{request.attachment.type}'. Please acknowledge this attachment in your response and tailor your answer assuming the file contains relevant context.]"
             user_content += file_info
 
-        # 🧠 GROQ API CALL (✅ FIXED: Using active, stable model 'llama3-8b-8192')
+        # 🧠 GROQ API CALL (Using active, stable model 'llama3-8b-8192')
         chat_completion = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}
             ],
-            model="llama3-8b-8192",  # <-- YE HAI ASLI FIX!
+            model="llama3-8b-8192",
             temperature=0.7,
             max_tokens=1500,
         )
@@ -138,13 +138,15 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
         }
         
     except Exception as e:
-        print(f"Createra AI Error: {str(e)}")
-        raise HTTPException(status_code=500, detail="An internal error occurred while processing your request. Please try again.")
+        error_detail = str(e)
+        print(f"🚨 CREATERA AI BACKEND ERROR: {error_detail}")
+        # 🚨 DEBUG MODE: Asli error frontend par bhejenge taaki hum exact problem pakad sakein
+        raise HTTPException(status_code=500, detail=f"Backend Debug Error: {error_detail}")
 
 @app.get("/")
 def health_check():
     return {
         "status": "online", 
-        "message": "Createra AI Backend v3.4.0 is running 24/7!",
-        "features": ["Text Generation", "Image Generation", "Attachment Metadata", "Active Groq Models"]
+        "message": "Createra AI Backend v3.5.0-DEBUG is running 24/7!",
+        "features": ["Text Generation", "Image Generation", "Attachment Metadata", "Active Groq Models", "Debug Mode ON"]
     }
