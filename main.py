@@ -1,5 +1,6 @@
-# main.py (Secure, Multimodal & World-Class Features)
+# main.py (Bulletproof, Secure, Multimodal & World-Class Features)
 import os
+import json
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +8,7 @@ from pydantic import BaseModel
 from groq import Groq
 import firebase_admin
 from firebase_admin import auth
-from firebase_admin import credentials  # ✅ Secure initialization ke liye zaroori
+from firebase_admin import credentials
 
 # ===== ENVIRONMENT VARIABLES =====
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -16,29 +17,27 @@ if not GROQ_API_KEY:
     
 client = Groq(api_key=GROQ_API_KEY)
 
-# ===== FIREBASE SETUP (Production Ready & Secure) =====
+# ===== FIREBASE SETUP (Bulletproof Render Method) =====
 if not firebase_admin._apps:
     try:
-        # Render se credentials read karna aur \n (newline) ko fix karna
-        private_key = os.getenv("FIREBASE_PRIVATE_KEY", "").replace("\\n", "\n")
+        # Render se pura JSON string read karna
+        creds_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+        if not creds_json:
+            raise ValueError("FIREBASE_CREDENTIALS_JSON environment variable is missing!")
         
-        cred_dict = {
-            "type": "service_account",
-            "project_id": os.getenv("FIREBASE_PROJECT_ID", "createra-ai"),
-            "private_key": private_key,
-            "client_email": os.getenv("FIREBASE_CLIENT_EMAIL", "")
-        }
+        # JSON string ko dictionary mein convert karna (Ye automatically saari fields handle karega)
+        cred_dict = json.loads(creds_json)
         
-        # Credentials object banana aur initialize karna
+        # Firebase Admin ko initialize karna
         cred = credentials.Certificate(cred_dict)
         firebase_admin.initialize_app(cred)
-        print("✅ Firebase Admin initialized successfully with Secure Service Account!")
+        print("✅ Firebase Admin initialized successfully with full JSON credentials!")
         
     except Exception as e:
         print(f"⚠️ Firebase Admin initialization failed: {e}")
 
 # ===== FASTAPI APP =====
-app = FastAPI(title="Createra AI Backend", version="3.2.0")
+app = FastAPI(title="Createra AI Backend", version="3.3.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -71,7 +70,7 @@ async def verify_firebase_token(authorization: str = Header(None)):
     
     token = authorization.split("Bearer ")[1]
     try:
-        # ✅ Ab ye perfectly kaam karega kyunki secure credentials upar set ho chuke hain
+        # ✅ Ab ye perfectly kaam karega kyunki full credentials upar set ho chuke hain
         decoded_token = auth.verify_id_token(token)
         return decoded_token
     except Exception as e:
@@ -156,6 +155,6 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
 def health_check():
     return {
         "status": "online", 
-        "message": "Createra AI Backend v3.2.0 is running 24/7!",
-        "features": ["Text Generation", "Image Generation", "Attachment Metadata Handling", "Secure Firebase Auth"]
+        "message": "Createra AI Backend v3.3.0 is running 24/7!",
+        "features": ["Text Generation", "Image Generation", "Attachment Metadata Handling", "Bulletproof Firebase Auth"]
     }
