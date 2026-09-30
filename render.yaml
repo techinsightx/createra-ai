@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: createra-ai-backend
+    env: python
+    plan: free
+    region: singapore
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false 
+        # 'sync: false' ka matlab hai ye key tum Render Dashboard mein manually daloge (security ke liye best hai)

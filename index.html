@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Createra AI — Multimodal AI Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #09090b;
+            --bg-secondary: #18181b;
+            --bg-sidebar: #0f0f11;
+            --bg-glass: rgba(24, 24, 27, 0.85);
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ===== SIDEBAR (Chat History) ===== */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            z-index: 50;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .new-chat-btn:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-primary); }
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .chat-history-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+        .chat-history-item:hover, .chat-history-item.active {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+        }
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 32px; height: 32px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .top-bar {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+        }
+        .menu-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+        .logo { font-size: 1.3rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ===== CHAT AREA ===== */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+        .chat-area::-webkit-scrollbar { width: 6px; }
+        .chat-area::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+
+        .message {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-bottom-right-radius: 4px;
+        }
+        .message.ai {
+            align-self: flex-start;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+        }
+        .message .label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            color: var(--accent-secondary);
+        }
+        .message.user .label { color: #a78bfa; text-align: right; }
+
+        .message img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .message .attachment-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .message.ai:hover .copy-btn { opacity: 1; }
+
+        /* ===== INPUT AREA ===== */
+        .input-container {
+            padding: 20px 24px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+        }
+        .options-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .options-row select {
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .input-box {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 12px;
+            transition: border-color 0.2s;
+        }
+        .input-box:focus-within { border-color: var(--accent-primary); }
+        
+        .attach-btn, .image-gen-btn {
+            width: 40px; height: 40px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .attach-btn:hover, .image-gen-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+        .image-gen-btn { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); }
+        .image-gen-btn:hover { background: rgba(244, 114, 182, 0.1); }
+
+        .input-box textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            resize: none;
+            max-height: 150px;
+            padding: 8px 0;
+        }
+        .input-box textarea:focus { outline: none; }
+        .input-box textarea::placeholder { color: #52525b; }
+
+        .send-btn {
+            width: 40px; height: 40px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .send-btn:hover { transform: scale(1.05); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .file-preview-bar {
+            display: none;
+            padding: 8px 12px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+        .file-preview-bar.active { display: flex; }
+        .remove-file { cursor: pointer; color: var(--error); font-weight: bold; }
+
+        /* ===== MODAL & TOAST ===== */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            padding: 32px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;
+        }
+        .modal input {
+            width: 100%; padding: 14px; margin: 10px 0; background: var(--bg-primary);
+            border: 1px solid var(--border-color); border-radius: 10px; color: white;
+        }
+        .modal button {
+            width: 100%; padding: 14px; background: var(--accent-gradient); border: none;
+            border-radius: 10px; color: white; font-weight: 700; cursor: pointer; margin-top: 10px;
+        }
+        .auth-error { color: var(--error); font-size: 0.85rem; margin-top: 10px; }
+
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            padding: 12px 24px; border-radius: 10px; z-index: 2000; transition: 0.3s;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--error); color: var(--error); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .menu-toggle { display: block; }
+            .message { max-width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">⚡ CREATERA</div>
+        </div>
+        <div style="padding: 10px;">
+            <button class="new-chat-btn" onclick="startNewChat()">➕ New Chat</button>
+        </div>
+        <div class="chat-history" id="chatHistoryList">
+            <!-- Chat items will be injected here -->
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-info" id="userInfo" onclick="logout()" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div style="flex:1; text-align: left;">
+                    <div style="font-weight: 600; font-size: 0.9rem;" id="userName">User</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Click to Logout</div>
+                </div>
+            </div>
+            <button class="new-chat-btn" id="loginBtnSidebar" onclick="openModal('login')" style="margin-top: 10px;">Log In / Sign Up</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="top-bar">
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <div class="logo">Createra AI</div>
+            <div style="width: 24px;"></div> <!-- Spacer for centering -->
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="message ai">
+                <div class="label">⚡ CREATERA AI</div>
+                Hello! I am your multimodal AI assistant. I can generate text, analyze images, read PDFs, and create stunning AI images. How can I help you today?
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="file-preview-bar" id="filePreviewBar">
+                <span id="fileName">file.pdf</span>
+                <span class="remove-file" onclick="clearFile()">✕</span>
+            </div>
+            <div class="options-row">
+                <select id="audience"><option value="general">🎯 General</option><option value="students">🎓 Students</option><option value="creators">🎬 Creators</option></select>
+                <select id="format"><option value="detailed_script">📝 Detailed Script</option><option value="reel_script">🎥 Reel Script</option><option value="blog_post">📰 Blog Post</option><option value="image_gen">🎨 Generate Image</option></select>
+            </div>
+            <div class="input-box">
+                <input type="file" id="fileInput" hidden accept="image/*,.pdf" onchange="handleFileSelect(event)">
+                <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach Image or PDF">📎</button>
+                <textarea id="userInput" rows="1" placeholder="Message Createra AI..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+                <button class="image-gen-btn" onclick="triggerImageGen()" title="Generate Image directly">🪄</button>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <h2 id="modalTitle" style="margin-bottom: 20px;">Welcome to Createra</h2>
+            <input type="email" id="authEmail" placeholder="Email Address">
+            <input type="password" id="authPassword" placeholder="Password">
+            <button onclick="handleAuth()" id="authSubmitBtn">Log In</button>
+            <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);">
+                <span id="switchText">No account? <span style="color: var(--accent-secondary); cursor: pointer;" onclick="toggleAuthMode()">Sign Up</span></span>
+            </p>
+            <p class="auth-error" id="authError"></p>
+            <button onclick="closeModal()" style="background: transparent; border: 1px solid var(--border-color); margin-top: 10px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- FIREBASE & LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCO3UoKy32ObYBRWUAWnixv1Wd57fstKt4",
+            authDomain: "createra-ai.firebaseapp.com",
+            projectId: "createra-ai",
+            storageBucket: "createra-ai.firebasestorage.app",
+            messagingSenderId: "243520774125",
+            appId: "1:243520774125:web:d14a5384bcf6bb504e51e4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        let currentUser = null;
+        let currentUserToken = null;
+        let currentChatId = 'default';
+        let attachedFile = null; // { name, type, base64 }
+        let isLoginMode = true;
+
+        // ===== CHAT HISTORY MANAGEMENT =====
+        const getChats = () => JSON.parse(localStorage.getItem(`createra_chats_${currentUser?.uid || 'guest'}`) || '{}');
+        const saveChats = (chats) => localStorage.setItem(`createra_chats_${currentUser?.uid || 'guest'}`, JSON.stringify(chats));
+        
+        function loadChatHistoryUI() {
+            const chats = getChats();
+            const list = document.getElementById('chatHistoryList');
+            list.innerHTML = '';
+            Object.keys(chats).forEach(id => {
+                const div = document.createElement('div');
+                div.className = `chat-history-item ${id === currentChatId ? 'active' : ''}`;
+                div.innerText = chats[id].title || 'New Conversation';
+                div.onclick = () => loadChat(id);
+                list.appendChild(div);
+            });
+        }
+
+        window.startNewChat = () => {
+            currentChatId = 'chat_' + Date.now();
+            document.getElementById('chatArea').innerHTML = `
+                <div class="message ai">
+                    <div class="label">⚡ CREATERA AI</div>
+                    Hello! I am your multimodal AI assistant. How can I help you today?
+                </div>`;
+            loadChatHistoryUI();
+            if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+        };
+
+        function loadChat(id) {
+            currentChatId = id;
+            const chats = getChats();
+            const chat = chats[id];
+            const area = document.getElementById('chatArea');
+            area.innerHTML = '';
+            if (chat && chat.messages) {
+                chat.messages.forEach(msg => renderMessage(msg.text, msg.type, msg.attachment));
+            } else {
+                area.innerHTML = `<div class="message ai"><div class="label">⚡ CREATERA AI</div>Start a new conversation!</div>`;
+            }
+            loadChatHistoryUI();
+            if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+        }
+
+        function saveMessageToHistory(text, type, attachment = null) {
+            const chats = getChats();
+            if (!chats[currentChatId]) {
+                chats[currentChatId] = { title: text.substring(0, 30) + '...', messages: [] };
+            }
+            chats[currentChatId].messages.push({ text, type, attachment });
+            saveChats(chats);
+            loadChatHistoryUI();
+        }
+
+        // ===== AUTH LOGIC =====
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                user.getIdToken().then(token => { currentUserToken = token; });
+                document.getElementById('userInfo').style.display = 'flex';
+                document.getElementById('loginBtnSidebar').style.display = 'none';
+                document.getElementById('userName').innerText = user.email.split('@')[0];
+                document.getElementById('userAvatar').innerText = user.email[0].toUpperCase();
+                closeModal();
+                showToast('Welcome back!', 'success');
+                startNewChat(); // Load or init chat for this user
+            } else {
+                document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('loginBtnSidebar').style.display = 'block';
+                currentUserToken = null;
+                currentChatId = 'guest_' + Date.now();
+            }
+        });
+
+        window.openModal = (mode) => { document.getElementById('authModal').classList.add('active'); toggleAuthMode(mode === 'signup'); };
+        window.closeModal = () => { document.getElementById('authModal').classList.remove('active'); document.getElementById('authError').innerText = ''; };
+        window.toggleAuthMode = (forceSignup) => {
+            isLoginMode = !forceSignup && isLoginMode ? false : true; // Simplified toggle
+            if(forceSignup) isLoginMode = false;
+            document.getElementById('modalTitle').innerText = isLoginMode ? 'Welcome Back' : 'Create Account';
+            document.getElementById('authSubmitBtn').innerText = isLoginMode ? 'Log In' : 'Sign Up Free';
+            document.getElementById('switchText').innerHTML = isLoginMode ? 'No account? <span style="color:var(--accent-secondary);cursor:pointer" onclick="toggleAuthMode(true)">Sign Up</span>' : 'Have an account? <span style="color:var(--accent-secondary);cursor:pointer" onclick="toggleAuthMode(false)">Log In</span>';
+        };
+
+        window.handleAuth = async () => {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            try {
+                if (isLoginMode) await signInWithEmailAndPassword(auth, email, password);
+                else await createUserWithEmailAndPassword(auth, email, password);
+            } catch (e) {
+                document.getElementById('authError').innerText = e.message.replace('Firebase: ', '');
+            }
+        };
+
+        window.logout = async () => { await signOut(auth); showToast('Logged out', 'success'); };
+
+        // ===== FILE & INPUT HANDLING =====
+        window.handleFileSelect = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                attachedFile = { name: file.name, type: file.type, base64: e.target.result };
+                document.getElementById('fileName').innerText = `📎 ${file.name}`;
+                document.getElementById('filePreviewBar').classList.add('active');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.clearFile = () => {
+            attachedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('filePreviewBar').classList.remove('active');
+        };
+
+        window.autoResize = (textarea) => {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        };
+
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
+
+        // ===== MESSAGE RENDERING =====
+        function renderMessage(text, type, attachment = null) {
+            const area = document.getElementById('chatArea');
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            
+            let content = `<div class="label">${type === 'user' ? 'YOU' : '⚡ CREATERA AI'}</div>`;
+            if (attachment) {
+                if (attachment.type.startsWith('image/')) {
+                    content += `<img src="${attachment.base64}" alt="Attachment">`;
+                } else {
+                    content += `<div class="attachment-preview">📄 ${attachment.name}</div>`;
+                }
+            }
+            
+            if (type === 'ai') {
+                // Check if it's an image generation result (URL)
+                if (text.startsWith('http') && (text.includes('.jpg') || text.includes('.png') || text.includes('pollinations'))) {
+                    content += `<img src="${text}" alt="Generated Image" style="max-width: 100%; border-radius: 12px; margin-top: 10px;">`;
+                    content += `<div style="margin-top:8px; font-size:0.85rem; color:var(--text-secondary)">✨ Image generated successfully!</div>`;
+                } else {
+                    content += `<div style="white-space: pre-wrap;">${text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>`;
+                    content += `<button class="copy-btn" onclick="copyToClipboard(this)">📋 Copy</button>`;
+                }
+            } else {
+                content += `<div style="white-space: pre-wrap;">${text}</div>`;
+            }
+            
+            div.innerHTML = content;
+            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        window.copyToClipboard = (btn) => {
+            const text = btn.parentElement.querySelector('div[style*="white-space"]').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerText = '✅ Copied';
+                showToast('Copied to clipboard!', 'success');
+                setTimeout(() => { btn.innerText = '📋 Copy'; }, 2000);
+            });
+        };
+
+        // ===== CORE AI LOGIC =====
+        window.sendMessage = async () => {
+            const input = document.getElementById('userInput');
+            const idea = input.value.trim();
+            if (!idea && !attachedFile) return;
+
+            if (!currentUserToken) {
+                showToast('🔒 Please log in to use Createra AI', 'error');
+                openModal('login');
+                return;
+            }
+
+            // Render User Message
+            renderMessage(idea, 'user', attachedFile);
+            saveMessageToHistory(idea, 'user', attachedFile);
+            
+            // Reset Input
+            input.value = '';
+            input.style.height = 'auto';
+            const fileToSend = attachedFile;
+            clearFile();
+            
+            document.getElementById('sendBtn').disabled = true;
+            
+            // Show Typing
+            const area = document.getElementById('chatArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `<div class="label">⚡ CREATERA AI</div><i>Processing your request...</i>`;
+            area.appendChild(typingDiv);
+            area.scrollTop = area.scrollHeight;
+
+            const audience = document.getElementById('audience').value;
+            const format = document.getElementById('format').value;
+
+            try {
+                const payload = {
+                    user_idea: idea,
+                    target_audience: audience,
+                    output_format: format,
+                    attachment: fileToSend ? { name: fileToSend.name, type: fileToSend.type, base64: fileToSend.base64 } : null
+                };
+
+                const response = await fetch('https://createra-ai.onrender.com/api/v1/generate', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUserToken}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                document.getElementById('typingIndicator')?.remove();
+
+                if (data.status === 'limit_reached') {
+                    renderMessage(data.message, 'ai');
+                    saveMessageToHistory(data.message, 'ai');
+                    showToast('Free limit reached!', 'error');
+                } else if (data.result) {
+                    renderMessage(data.result, 'ai');
+                    saveMessageToHistory(data.result, 'ai');
+                } else {
+                    renderMessage('❌ Something went wrong. Please try again.', 'ai');
+                }
+            } catch (error) {
+                document.getElementById('typingIndicator')?.remove();
+                renderMessage('⚠️ Network error. Please check your connection.', 'ai');
+                showToast('Connection error', 'error');
+            }
+
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        };
+
+        // ===== IMAGE GENERATION FEATURE (FREE API) =====
+        window.triggerImageGen = async () => {
+            const idea = document.getElementById('userInput').value.trim();
+            if (!idea) {
+                showToast('Please describe the image you want to generate!', 'error');
+                return;
+            }
+            if (!currentUserToken) { openModal('login'); return; }
+
+            renderMessage(`🎨 Generating: "${idea}"`, 'user');
+            document.getElementById('userInput').value = '';
+            document.getElementById('sendBtn').disabled = true;
+
+            const area = document.getElementById('chatArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `<div class="label">⚡ CREATERA AI</div><i>🎨 Painting your masterpiece...</i>`;
+            area.appendChild(typingDiv);
+            area.scrollTop = area.scrollHeight;
+
+            try {
+                // Using Pollinations.ai (Free, No API Key needed for basic use)
+                const encodedPrompt = encodeURIComponent(idea + ", high quality, detailed, 4k, professional");
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*1000)}`;
+                
+                // Preload image to ensure it's ready
+                const img = new Image();
+                img.onload = () => {
+                    document.getElementById('typingIndicator')?.remove();
+                    renderMessage(imageUrl, 'ai');
+                    saveMessageToHistory(imageUrl, 'ai');
+                    document.getElementById('sendBtn').disabled = false;
+                };
+                img.onerror = () => {
+                    document.getElementById('typingIndicator')?.remove();
+                    renderMessage('❌ Image generation failed. Please try a different description.', 'ai');
+                    document.getElementById('sendBtn').disabled = false;
+                };
+                img.src = imageUrl;
+
+            } catch (error) {
+                document.getElementById('typingIndicator')?.remove();
+                renderMessage('⚠️ Image generation error.', 'ai');
+                document.getElementById('sendBtn').disabled = false;
+            }
+        };
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
