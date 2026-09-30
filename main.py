@@ -1,4 +1,4 @@
-# main.py (Bulletproof, Secure, Multimodal & World-Class Features)
+# main.py (Final Fixed: Active Groq Model + Bulletproof Firebase)
 import os
 import json
 from typing import Optional
@@ -20,28 +20,23 @@ client = Groq(api_key=GROQ_API_KEY)
 # ===== FIREBASE SETUP (Bulletproof Render Method) =====
 if not firebase_admin._apps:
     try:
-        # Render se pura JSON string read karna
         creds_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
         if not creds_json:
             raise ValueError("FIREBASE_CREDENTIALS_JSON environment variable is missing!")
         
-        # JSON string ko dictionary mein convert karna (Ye automatically saari fields handle karega)
         cred_dict = json.loads(creds_json)
-        
-        # Firebase Admin ko initialize karna
         cred = credentials.Certificate(cred_dict)
         firebase_admin.initialize_app(cred)
         print("✅ Firebase Admin initialized successfully with full JSON credentials!")
-        
     except Exception as e:
         print(f"⚠️ Firebase Admin initialization failed: {e}")
 
 # ===== FASTAPI APP =====
-app = FastAPI(title="Createra AI Backend", version="3.3.0")
+app = FastAPI(title="Createra AI Backend", version="3.4.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Production mein specific domains daal dena: ["https://createra.in", "https://createra-ai.vercel.app"]
+    allow_origins=["*"],
     allow_methods=["*"], 
     allow_headers=["*"],
 )
@@ -50,7 +45,7 @@ app.add_middleware(
 class Attachment(BaseModel):
     name: str
     type: str
-    base64: Optional[str] = None  # Frontend bhejega, par hum token bachane ke liye sirf metadata use karenge
+    base64: Optional[str] = None
 
 class TaskRequest(BaseModel):
     user_idea: str
@@ -59,7 +54,6 @@ class TaskRequest(BaseModel):
     attachment: Optional[Attachment] = None
 
 # ===== USAGE TRACKER =====
-# Note: Production mein is dictionary ko Firebase Firestore ya Supabase se replace kar dena
 user_usage = {}
 FREE_LIMIT = 5 
 
@@ -70,7 +64,6 @@ async def verify_firebase_token(authorization: str = Header(None)):
     
     token = authorization.split("Bearer ")[1]
     try:
-        # ✅ Ab ye perfectly kaam karega kyunki full credentials upar set ho chuke hain
         decoded_token = auth.verify_id_token(token)
         return decoded_token
     except Exception as e:
@@ -92,7 +85,7 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
         }
 
     try:
-        # 🎨 1. IMAGE GENERATION HANDLING (Direct URL Return via Pollinations.ai)
+        # 🎨 1. IMAGE GENERATION HANDLING
         if request.output_format == "image_gen" or "image" in request.user_idea.lower():
             import urllib.parse
             safe_prompt = urllib.parse.quote(request.user_idea + ", high quality, detailed, 4k, professional, masterpiece")
@@ -102,7 +95,7 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
             return {
                 "status": "success",
                 "agent_name": "Createra AI",
-                "result": image_url, # Frontend isko image tag mein render karega
+                "result": image_url,
                 "remaining_free_uses": FREE_LIMIT - user_usage[user_id]
             }
 
@@ -116,25 +109,22 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
         1. Analyze the request deeply and creatively.
         2. Use clear, professional, and simple global English.
         3. Provide actionable, step-by-step content with clean formatting (use Markdown: headings, bold text, bullet points).
-        4. If the user mentions an attached file, acknowledge it and provide relevant insights or ask for specific details if needed.
+        4. If the user mentions an attached file, acknowledge it and provide relevant insights.
         """
 
         user_content = request.user_idea
 
-        # 📎 Attachment Logic (Token Limit Protection)
-        # Hum pura base64 string LLM ko nahi bhejte kyunki wo token limit cross karke error dega.
-        # Iski jagah, hum AI ko file ka metadata dete hain aur context assume karne ko bolte hain.
         if request.attachment:
-            file_info = f"\n\n[SYSTEM NOTE: User has attached a file named '{request.attachment.name}' of type '{request.attachment.type}'. Please acknowledge this attachment in your response and tailor your answer assuming the file contains relevant context for the user's idea.]"
+            file_info = f"\n\n[SYSTEM NOTE: User has attached a file named '{request.attachment.name}' of type '{request.attachment.type}'. Please acknowledge this attachment in your response and tailor your answer assuming the file contains relevant context.]"
             user_content += file_info
 
-        # 🧠 GROQ API CALL (Using Llama 3.1 8B Instant for maximum speed and reliability)
+        # 🧠 GROQ API CALL (✅ FIXED: Using active, stable model 'llama3-8b-8192')
         chat_completion = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}
             ],
-            model="llama-3.1-8b-instant", 
+            model="llama3-8b-8192",  # <-- YE HAI ASLI FIX!
             temperature=0.7,
             max_tokens=1500,
         )
@@ -155,6 +145,6 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
 def health_check():
     return {
         "status": "online", 
-        "message": "Createra AI Backend v3.3.0 is running 24/7!",
-        "features": ["Text Generation", "Image Generation", "Attachment Metadata Handling", "Bulletproof Firebase Auth"]
+        "message": "Createra AI Backend v3.4.0 is running 24/7!",
+        "features": ["Text Generation", "Image Generation", "Attachment Metadata", "Active Groq Models"]
     }
