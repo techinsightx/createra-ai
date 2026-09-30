@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Createra AI — Multimodal AI Platform</title>
+    <title>Createra AI — Ultimate Multimodal Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-primary: #09090b;
-            --bg-secondary: #18181b;
-            --bg-sidebar: #0f0f11;
-            --bg-glass: rgba(24, 24, 27, 0.85);
+            --bg-primary: #020617;
+            --bg-secondary: #0f172a;
+            --bg-sidebar: #020617;
+            --bg-input: #1e293b;
             --accent-primary: #8b5cf6;
             --accent-secondary: #06b6d4;
             --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
             --border-color: rgba(255, 255, 255, 0.08);
             --success: #10b981;
             --error: #ef4444;
+            --mic-active: #ef4444;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -32,269 +33,183 @@
             height: 100vh;
             display: flex;
             overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.05), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.05), transparent 40%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
         }
 
-        /* ===== SIDEBAR (Chat History) ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 280px;
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 50;
         }
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
+        .logo-icon {
+            width: 32px; height: 32px; background: var(--accent-gradient); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: white;
         }
+        .logo-text { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px; }
+        
         .new-chat-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
+            margin: 16px; padding: 12px; background: var(--accent-gradient); color: white; border: none;
+            border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
-        .new-chat-btn:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-primary); }
-        .chat-history {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
+        .new-chat-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4); }
+        
+        .chat-history { flex: 1; overflow-y: auto; padding: 0 10px 10px; }
         .chat-history-item {
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: all 0.2s;
-            margin-bottom: 4px;
+            padding: 12px; border-radius: 8px; cursor: pointer; color: var(--text-secondary);
+            font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            transition: all 0.2s; margin-bottom: 4px; display: flex; align-items: center; gap: 10px;
         }
-        .chat-history-item:hover, .chat-history-item.active {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-primary);
-        }
-        .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid var(--border-color);
-        }
+        .chat-history-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+        .chat-history-item.active { background: rgba(139, 92, 246, 0.15); color: var(--accent-primary); border: 1px solid rgba(139, 92, 246, 0.2); }
+        
+        .sidebar-footer { padding: 16px; border-top: 1px solid var(--border-color); }
         .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: var(--bg-secondary);
-            border-radius: 10px;
-            cursor: pointer;
+            display: none; align-items: center; gap: 10px; padding: 10px; background: var(--bg-secondary);
+            border-radius: 10px; cursor: pointer; border: 1px solid var(--border-color);
         }
+        .user-info:hover { background: rgba(255,255,255,0.05); }
         .user-avatar {
-            width: 32px; height: 32px;
-            background: var(--accent-gradient);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 0.8rem;
+            width: 32px; height: 32px; background: var(--accent-gradient); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; color: white;
         }
 
         /* ===== MAIN CONTENT ===== */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
         .top-bar {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-glass);
+            padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex;
+            justify-content: space-between; align-items: center; background: rgba(2, 6, 23, 0.8);
             backdrop-filter: blur(12px);
         }
         .menu-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
-        .logo { font-size: 1.3rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .top-bar-title { font-size: 1rem; font-weight: 600; color: var(--text-secondary); }
 
         /* ===== CHAT AREA ===== */
         .chat-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            scroll-behavior: smooth;
+            flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column;
+            gap: 20px; scroll-behavior: smooth;
         }
         .chat-area::-webkit-scrollbar { width: 6px; }
-        .chat-area::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+        .chat-area::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
         .message {
-            max-width: 85%;
-            padding: 16px 20px;
-            border-radius: 16px;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            animation: slideUp 0.3s ease;
-            position: relative;
+            max-width: 85%; padding: 16px 20px; border-radius: 16px; line-height: 1.6;
+            font-size: 0.95rem; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
         }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .message.user {
-            align-self: flex-end;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05));
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-bottom-right-radius: 4px;
+            align-self: flex-end; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.3); border-bottom-right-radius: 4px;
         }
         .message.ai {
-            align-self: flex-start;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-bottom-left-radius: 4px;
+            align-self: flex-start; background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .message .label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            color: var(--accent-secondary);
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 8px; color: var(--accent-secondary); display: flex; align-items: center; gap: 6px;
         }
-        .message.user .label { color: #a78bfa; text-align: right; }
+        .message.user .label { color: #a78bfa; justify-content: flex-end; }
 
-        .message img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-top: 10px;
-            border: 1px solid var(--border-color);
-        }
+        .message img { max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border-color); }
         .message .attachment-preview {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05);
+            padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.85rem; color: var(--text-secondary);
         }
 
         .copy-btn {
-            position: absolute;
-            top: 8px; right: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            opacity: 0;
-            transition: 0.2s;
+            position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color); color: var(--text-secondary); padding: 4px 8px;
+            border-radius: 6px; font-size: 0.7rem; cursor: pointer; opacity: 0; transition: 0.2s;
         }
         .message.ai:hover .copy-btn { opacity: 1; }
+        .copy-btn:hover { background: rgba(255,255,255,0.1); color: white; }
 
-        /* ===== INPUT AREA ===== */
-        .input-container {
-            padding: 20px 24px;
-            background: var(--bg-primary);
-            border-top: 1px solid var(--border-color);
+        /* ===== INPUT COMMAND CENTER ===== */
+        .input-container { padding: 20px 24px 24px; background: linear-gradient(to top, var(--bg-primary) 80%, transparent); }
+        .input-island {
+            background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 20px;
+            padding: 12px; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;
         }
-        .options-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
+        .input-island:focus-within {
+            border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 10px 30px rgba(0,0,0,0.3);
         }
+
+        .options-row { display: flex; gap: 8px; margin-bottom: 10px; padding: 0 4px; }
         .options-row select {
-            padding: 8px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
+            padding: 6px 10px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 6px; color: var(--text-secondary); font-size: 0.75rem; cursor: pointer; font-family: inherit;
         }
-        .input-box {
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 12px;
-            transition: border-color 0.2s;
-        }
-        .input-box:focus-within { border-color: var(--accent-primary); }
+        .options-row select:focus { outline: none; border-color: var(--accent-primary); color: white; }
+
+        .input-box { display: flex; align-items: flex-end; gap: 10px; }
         
-        .attach-btn, .image-gen-btn {
-            width: 40px; height: 40px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-            flex-shrink: 0;
+        .action-btn {
+            width: 40px; height: 40px; background: transparent; border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-secondary); cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
         }
-        .attach-btn:hover, .image-gen-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
-        .image-gen-btn { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); }
-        .image-gen-btn:hover { background: rgba(244, 114, 182, 0.1); }
+        .action-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
+        .action-btn svg { width: 20px; height: 20px; }
+
+        .mic-btn { position: relative; }
+        .mic-btn.listening {
+            background: rgba(239, 68, 68, 0.1); border-color: var(--mic-active); color: var(--mic-active);
+            animation: pulse-mic 1.5s infinite;
+        }
+        @keyframes pulse-mic {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
 
         .input-box textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-family: inherit;
-            resize: none;
-            max-height: 150px;
-            padding: 8px 0;
+            flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 1rem;
+            font-family: inherit; resize: none; max-height: 150px; padding: 10px 0; line-height: 1.5;
         }
         .input-box textarea:focus { outline: none; }
-        .input-box textarea::placeholder { color: #52525b; }
+        .input-box textarea::placeholder { color: #64748b; }
 
         .send-btn {
-            width: 40px; height: 40px;
-            background: var(--accent-gradient);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-            flex-shrink: 0;
+            width: 40px; height: 40px; background: var(--accent-gradient); border: none;
+            border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: all 0.2s; flex-shrink: 0; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
-        .send-btn:hover { transform: scale(1.05); }
-        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .listening-pill {
+            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--mic-active); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; display: none; align-items: center; gap: 8px; backdrop-filter: blur(8px);
+            animation: slideDown 0.3s ease;
+        }
+        .listening-pill.active { display: flex; }
+        @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .listening-dot { width: 8px; height: 8px; background: var(--mic-active); border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .file-preview-bar {
-            display: none;
-            padding: 8px 12px;
-            background: rgba(139, 92, 246, 0.1);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.85rem;
+            display: none; padding: 8px 12px; background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; margin-bottom: 10px;
+            align-items: center; justify-content: space-between; font-size: 0.85rem; color: #a78bfa;
         }
         .file-preview-bar.active { display: flex; }
-        .remove-file { cursor: pointer; color: var(--error); font-weight: bold; }
+        .remove-file { cursor: pointer; color: var(--error); font-weight: bold; padding: 0 5px; }
 
         /* ===== MODAL & TOAST ===== */
         .modal-overlay {
@@ -306,14 +221,17 @@
         .modal {
             background: var(--bg-secondary); border: 1px solid var(--border-color);
             padding: 32px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
+        .modal h2 { margin-bottom: 20px; font-size: 1.5rem; }
         .modal input {
             width: 100%; padding: 14px; margin: 10px 0; background: var(--bg-primary);
-            border: 1px solid var(--border-color); border-radius: 10px; color: white;
+            border: 1px solid var(--border-color); border-radius: 10px; color: white; font-family: inherit;
         }
+        .modal input:focus { outline: none; border-color: var(--accent-primary); }
         .modal button {
             width: 100%; padding: 14px; background: var(--accent-gradient); border: none;
-            border-radius: 10px; color: white; font-weight: 700; cursor: pointer; margin-top: 10px;
+            border-radius: 10px; color: white; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: inherit;
         }
         .auth-error { color: var(--error); font-size: 0.85rem; margin-top: 10px; }
 
@@ -321,17 +239,18 @@
             position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: var(--bg-secondary); border: 1px solid var(--border-color);
             padding: 12px 24px; border-radius: 10px; z-index: 2000; transition: 0.3s;
+            font-size: 0.9rem; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
         .toast.success { border-color: var(--success); color: var(--success); }
         .toast.error { border-color: var(--error); color: var(--error); }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
+            .sidebar { position: absolute; height: 100%; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
             .sidebar.open { transform: translateX(0); }
             .menu-toggle { display: block; }
             .message { max-width: 95%; }
+            .input-container { padding: 16px; }
         }
     </style>
 </head>
@@ -340,58 +259,88 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo">⚡ CREATERA</div>
+            <div class="logo-icon">C</div>
+            <div class="logo-text">Createra AI</div>
         </div>
-        <div style="padding: 10px;">
-            <button class="new-chat-btn" onclick="startNewChat()">➕ New Chat</button>
-        </div>
-        <div class="chat-history" id="chatHistoryList">
-            <!-- Chat items will be injected here -->
-        </div>
+        <button class="new-chat-btn" onclick="startNewChat()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            New Chat
+        </button>
+        <div class="chat-history" id="chatHistoryList"></div>
         <div class="sidebar-footer">
-            <div class="user-info" id="userInfo" onclick="logout()" style="display: none;">
+            <div class="user-info" id="userInfo" onclick="logout()">
                 <div class="user-avatar" id="userAvatar">U</div>
                 <div style="flex:1; text-align: left;">
-                    <div style="font-weight: 600; font-size: 0.9rem;" id="userName">User</div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Click to Logout</div>
+                    <div style="font-weight: 600; font-size: 0.85rem;" id="userName">User</div>
+                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Click to Logout</div>
                 </div>
             </div>
-            <button class="new-chat-btn" id="loginBtnSidebar" onclick="openModal('login')" style="margin-top: 10px;">Log In / Sign Up</button>
+            <button class="new-chat-btn" id="loginBtnSidebar" onclick="openModal('login')" style="background: var(--bg-secondary); border: 1px solid var(--border-color); box-shadow: none; margin: 0; color: var(--text-primary);">
+                Log In / Sign Up
+            </button>
         </div>
     </aside>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
         <div class="top-bar">
-            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-            <div class="logo">Createra AI</div>
-            <div style="width: 24px;"></div> <!-- Spacer for centering -->
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <div class="top-bar-title">Createra AI Assistant</div>
+            <div style="width: 24px;"></div>
         </div>
 
         <div class="chat-area" id="chatArea">
             <div class="message ai">
                 <div class="label">⚡ CREATERA AI</div>
-                Hello! I am your multimodal AI assistant. I can generate text, analyze images, read PDFs, and create stunning AI images. How can I help you today?
+                Hello! I am your advanced multimodal AI. I can write scripts, generate images, analyze PDFs, and even listen to your voice. How can I assist you today?
             </div>
         </div>
 
         <div class="input-container">
             <div class="file-preview-bar" id="filePreviewBar">
-                <span id="fileName">file.pdf</span>
+                <span id="fileName">📎 file.pdf</span>
                 <span class="remove-file" onclick="clearFile()">✕</span>
             </div>
-            <div class="options-row">
-                <select id="audience"><option value="general">🎯 General</option><option value="students">🎓 Students</option><option value="creators">🎬 Creators</option></select>
-                <select id="format"><option value="detailed_script">📝 Detailed Script</option><option value="reel_script">🎥 Reel Script</option><option value="blog_post">📰 Blog Post</option><option value="image_gen">🎨 Generate Image</option></select>
-            </div>
-            <div class="input-box">
-                <input type="file" id="fileInput" hidden accept="image/*,.pdf" onchange="handleFileSelect(event)">
-                <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach Image or PDF">📎</button>
-                <textarea id="userInput" rows="1" placeholder="Message Createra AI..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
-                <button class="image-gen-btn" onclick="triggerImageGen()" title="Generate Image directly">🪄</button>
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                </button>
+            
+            <div class="input-island">
+                <div class="listening-pill" id="listeningPill">
+                    <div class="listening-dot"></div>
+                    Listening... (Speak in Hindi or English)
+                </div>
+
+                <div class="options-row">
+                    <select id="audience">
+                        <option value="general">🎯 General</option>
+                        <option value="students">🎓 Students</option>
+                        <option value="creators">🎬 Creators</option>
+                        <option value="business">💼 Business</option>
+                    </select>
+                    <select id="format">
+                        <option value="detailed_script">📝 Detailed Script</option>
+                        <option value="reel_script">🎥 Reel Script</option>
+                        <option value="blog_post">📰 Blog Post</option>
+                        <option value="image_gen">🎨 Generate Image</option>
+                    </select>
+                </div>
+
+                <div class="input-box">
+                    <input type="file" id="fileInput" hidden accept="image/*,.pdf" onchange="handleFileSelect(event)">
+                    <button class="action-btn" onclick="document.getElementById('fileInput').click()" title="Attach Image/PDF">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                    </button>
+                    
+                    <textarea id="userInput" rows="1" placeholder="Message Createra AI or use voice input..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+                    
+                    <button class="action-btn mic-btn" id="micBtn" onclick="toggleMic()" title="Voice Input (Hindi/English)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    </button>
+
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -399,7 +348,7 @@
     <!-- AUTH MODAL -->
     <div class="modal-overlay" id="authModal">
         <div class="modal">
-            <h2 id="modalTitle" style="margin-bottom: 20px;">Welcome to Createra</h2>
+            <h2 id="modalTitle">Welcome to Createra</h2>
             <input type="email" id="authEmail" placeholder="Email Address">
             <input type="password" id="authPassword" placeholder="Password">
             <button onclick="handleAuth()" id="authSubmitBtn">Log In</button>
@@ -407,7 +356,7 @@
                 <span id="switchText">No account? <span style="color: var(--accent-secondary); cursor: pointer;" onclick="toggleAuthMode()">Sign Up</span></span>
             </p>
             <p class="auth-error" id="authError"></p>
-            <button onclick="closeModal()" style="background: transparent; border: 1px solid var(--border-color); margin-top: 10px;">Cancel</button>
+            <button onclick="closeModal()" style="background: transparent; border: 1px solid var(--border-color); margin-top: 10px; color: var(--text-secondary);">Cancel</button>
         </div>
     </div>
 
@@ -434,10 +383,65 @@
         let currentUser = null;
         let currentUserToken = null;
         let currentChatId = 'default';
-        let attachedFile = null; // { name, type, base64 }
+        let attachedFile = null;
         let isLoginMode = true;
 
-        // ===== CHAT HISTORY MANAGEMENT =====
+        // ===== SPEECH RECOGNITION =====
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isListening = false;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-IN';
+
+            recognition.onstart = () => {
+                isListening = true;
+                document.getElementById('micBtn').classList.add('listening');
+                document.getElementById('listeningPill').classList.add('active');
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                document.getElementById('micBtn').classList.remove('listening');
+                document.getElementById('listeningPill').classList.remove('active');
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech error:', event.error);
+                showToast('Mic error: ' + event.error, 'error');
+                if(isListening) recognition.stop();
+            };
+
+            recognition.onresult = (event) => {
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    }
+                }
+                if (finalTranscript) {
+                    const textarea = document.getElementById('userInput');
+                    textarea.value += (textarea.value.length > 0 ? ' ' : '') + finalTranscript;
+                    autoResize(textarea);
+                }
+            };
+        } else {
+            document.getElementById('micBtn').style.display = 'none';
+        }
+
+        window.toggleMic = () => {
+            if (!recognition) {
+                showToast('Voice input not supported in this browser.', 'error');
+                return;
+            }
+            if (isListening) recognition.stop();
+            else recognition.start();
+        };
+
+        // ===== CHAT HISTORY =====
         const getChats = () => JSON.parse(localStorage.getItem(`createra_chats_${currentUser?.uid || 'guest'}`) || '{}');
         const saveChats = (chats) => localStorage.setItem(`createra_chats_${currentUser?.uid || 'guest'}`, JSON.stringify(chats));
         
@@ -445,10 +449,10 @@
             const chats = getChats();
             const list = document.getElementById('chatHistoryList');
             list.innerHTML = '';
-            Object.keys(chats).forEach(id => {
+            Object.keys(chats).reverse().forEach(id => {
                 const div = document.createElement('div');
                 div.className = `chat-history-item ${id === currentChatId ? 'active' : ''}`;
-                div.innerText = chats[id].title || 'New Conversation';
+                div.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> ${chats[id].title || 'New Chat'}`;
                 div.onclick = () => loadChat(id);
                 list.appendChild(div);
             });
@@ -456,11 +460,7 @@
 
         window.startNewChat = () => {
             currentChatId = 'chat_' + Date.now();
-            document.getElementById('chatArea').innerHTML = `
-                <div class="message ai">
-                    <div class="label">⚡ CREATERA AI</div>
-                    Hello! I am your multimodal AI assistant. How can I help you today?
-                </div>`;
+            document.getElementById('chatArea').innerHTML = `<div class="message ai"><div class="label">⚡ CREATERA AI</div>Hello! I am your advanced multimodal AI. How can I assist you today?</div>`;
             loadChatHistoryUI();
             if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
         };
@@ -482,9 +482,7 @@
 
         function saveMessageToHistory(text, type, attachment = null) {
             const chats = getChats();
-            if (!chats[currentChatId]) {
-                chats[currentChatId] = { title: text.substring(0, 30) + '...', messages: [] };
-            }
+            if (!chats[currentChatId]) chats[currentChatId] = { title: text.substring(0, 30) + '...', messages: [] };
             chats[currentChatId].messages.push({ text, type, attachment });
             saveChats(chats);
             loadChatHistoryUI();
@@ -500,8 +498,8 @@
                 document.getElementById('userName').innerText = user.email.split('@')[0];
                 document.getElementById('userAvatar').innerText = user.email[0].toUpperCase();
                 closeModal();
-                showToast('Welcome back!', 'success');
-                startNewChat(); // Load or init chat for this user
+                showToast('Welcome back to Createra!', 'success');
+                startNewChat();
             } else {
                 document.getElementById('userInfo').style.display = 'none';
                 document.getElementById('loginBtnSidebar').style.display = 'block';
@@ -513,8 +511,7 @@
         window.openModal = (mode) => { document.getElementById('authModal').classList.add('active'); toggleAuthMode(mode === 'signup'); };
         window.closeModal = () => { document.getElementById('authModal').classList.remove('active'); document.getElementById('authError').innerText = ''; };
         window.toggleAuthMode = (forceSignup) => {
-            isLoginMode = !forceSignup && isLoginMode ? false : true; // Simplified toggle
-            if(forceSignup) isLoginMode = false;
+            isLoginMode = !forceSignup;
             document.getElementById('modalTitle').innerText = isLoginMode ? 'Welcome Back' : 'Create Account';
             document.getElementById('authSubmitBtn').innerText = isLoginMode ? 'Log In' : 'Sign Up Free';
             document.getElementById('switchText').innerHTML = isLoginMode ? 'No account? <span style="color:var(--accent-secondary);cursor:pointer" onclick="toggleAuthMode(true)">Sign Up</span>' : 'Have an account? <span style="color:var(--accent-secondary);cursor:pointer" onclick="toggleAuthMode(false)">Log In</span>';
@@ -527,17 +524,18 @@
                 if (isLoginMode) await signInWithEmailAndPassword(auth, email, password);
                 else await createUserWithEmailAndPassword(auth, email, password);
             } catch (e) {
-                document.getElementById('authError').innerText = e.message.replace('Firebase: ', '');
+                let msg = e.message.replace('Firebase: ', '');
+                if(msg.includes('invalid-credential')) msg = 'Incorrect email or password.';
+                document.getElementById('authError').innerText = msg;
             }
         };
 
-        window.logout = async () => { await signOut(auth); showToast('Logged out', 'success'); };
+        window.logout = async () => { await signOut(auth); showToast('Logged out successfully', 'success'); };
 
         // ===== FILE & INPUT HANDLING =====
         window.handleFileSelect = (event) => {
             const file = event.target.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
             reader.onload = (e) => {
                 attachedFile = { name: file.name, type: file.type, base64: e.target.result };
@@ -568,18 +566,14 @@
             
             let content = `<div class="label">${type === 'user' ? 'YOU' : '⚡ CREATERA AI'}</div>`;
             if (attachment) {
-                if (attachment.type.startsWith('image/')) {
-                    content += `<img src="${attachment.base64}" alt="Attachment">`;
-                } else {
-                    content += `<div class="attachment-preview">📄 ${attachment.name}</div>`;
-                }
+                if (attachment.type.startsWith('image/')) content += `<img src="${attachment.base64}" alt="Attachment">`;
+                else content += `<div class="attachment-preview">📄 ${attachment.name}</div>`;
             }
             
             if (type === 'ai') {
-                // Check if it's an image generation result (URL)
                 if (text.startsWith('http') && (text.includes('.jpg') || text.includes('.png') || text.includes('pollinations'))) {
                     content += `<img src="${text}" alt="Generated Image" style="max-width: 100%; border-radius: 12px; margin-top: 10px;">`;
-                    content += `<div style="margin-top:8px; font-size:0.85rem; color:var(--text-secondary)">✨ Image generated successfully!</div>`;
+                    content += `<div style="margin-top:8px; font-size:0.85rem; color:var(--text-secondary)">✨ Image generated successfully! Right-click to save.</div>`;
                 } else {
                     content += `<div style="white-space: pre-wrap;">${text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>`;
                     content += `<button class="copy-btn" onclick="copyToClipboard(this)">📋 Copy</button>`;
@@ -602,7 +596,7 @@
             });
         };
 
-        // ===== CORE AI LOGIC =====
+        // ===== CORE AI LOGIC (WORLD-CLASS ERROR HANDLING) =====
         window.sendMessage = async () => {
             const input = document.getElementById('userInput');
             const idea = input.value.trim();
@@ -614,11 +608,11 @@
                 return;
             }
 
-            // Render User Message
+            if(isListening && recognition) recognition.stop();
+
             renderMessage(idea, 'user', attachedFile);
             saveMessageToHistory(idea, 'user', attachedFile);
             
-            // Reset Input
             input.value = '';
             input.style.height = 'auto';
             const fileToSend = attachedFile;
@@ -626,7 +620,6 @@
             
             document.getElementById('sendBtn').disabled = true;
             
-            // Show Typing
             const area = document.getElementById('chatArea');
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message ai';
@@ -655,10 +648,23 @@
                     body: JSON.stringify(payload)
                 });
 
-                const data = await response.json();
+                // 🌟 SMART ERROR HANDLING: Parse JSON safely
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = { detail: `Server returned ${response.status} ${response.statusText} (Check Render Logs)` };
+                }
+
                 document.getElementById('typingIndicator')?.remove();
 
-                if (data.status === 'limit_reached') {
+                if (!response.ok) {
+                    // Shows EXACT error from backend (e.g., "Invalid token", "API Key missing")
+                    const errorMsg = data.detail || data.message || `Server Error (${response.status})`;
+                    renderMessage(`⚠️ Error: ${errorMsg}`, 'ai');
+                    showToast(`Failed: ${errorMsg}`, 'error');
+                    console.error("Backend Error:", data);
+                } else if (data.status === 'limit_reached') {
                     renderMessage(data.message, 'ai');
                     saveMessageToHistory(data.message, 'ai');
                     showToast('Free limit reached!', 'error');
@@ -666,64 +672,17 @@
                     renderMessage(data.result, 'ai');
                     saveMessageToHistory(data.result, 'ai');
                 } else {
-                    renderMessage('❌ Something went wrong. Please try again.', 'ai');
+                    renderMessage(`❌ Unexpected response. Details: ${JSON.stringify(data)}`, 'ai');
                 }
             } catch (error) {
                 document.getElementById('typingIndicator')?.remove();
-                renderMessage('⚠️ Network error. Please check your connection.', 'ai');
+                renderMessage('⚠️ Network error. Please check your internet connection.', 'ai');
                 showToast('Connection error', 'error');
+                console.error("Fetch error:", error);
             }
 
             document.getElementById('sendBtn').disabled = false;
             input.focus();
-        };
-
-        // ===== IMAGE GENERATION FEATURE (FREE API) =====
-        window.triggerImageGen = async () => {
-            const idea = document.getElementById('userInput').value.trim();
-            if (!idea) {
-                showToast('Please describe the image you want to generate!', 'error');
-                return;
-            }
-            if (!currentUserToken) { openModal('login'); return; }
-
-            renderMessage(`🎨 Generating: "${idea}"`, 'user');
-            document.getElementById('userInput').value = '';
-            document.getElementById('sendBtn').disabled = true;
-
-            const area = document.getElementById('chatArea');
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message ai';
-            typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = `<div class="label">⚡ CREATERA AI</div><i>🎨 Painting your masterpiece...</i>`;
-            area.appendChild(typingDiv);
-            area.scrollTop = area.scrollHeight;
-
-            try {
-                // Using Pollinations.ai (Free, No API Key needed for basic use)
-                const encodedPrompt = encodeURIComponent(idea + ", high quality, detailed, 4k, professional");
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*1000)}`;
-                
-                // Preload image to ensure it's ready
-                const img = new Image();
-                img.onload = () => {
-                    document.getElementById('typingIndicator')?.remove();
-                    renderMessage(imageUrl, 'ai');
-                    saveMessageToHistory(imageUrl, 'ai');
-                    document.getElementById('sendBtn').disabled = false;
-                };
-                img.onerror = () => {
-                    document.getElementById('typingIndicator')?.remove();
-                    renderMessage('❌ Image generation failed. Please try a different description.', 'ai');
-                    document.getElementById('sendBtn').disabled = false;
-                };
-                img.src = imageUrl;
-
-            } catch (error) {
-                document.getElementById('typingIndicator')?.remove();
-                renderMessage('⚠️ Image generation error.', 'ai');
-                document.getElementById('sendBtn').disabled = false;
-            }
         };
 
         function showToast(msg, type) {
