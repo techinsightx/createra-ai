@@ -1,4 +1,4 @@
-# main.py (Upgraded for Multimodal, World-Class Features + Firebase Fix)
+# main.py (Secure, Multimodal & World-Class Features)
 import os
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, Header
@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from groq import Groq
 import firebase_admin
 from firebase_admin import auth
+from firebase_admin import credentials  # ✅ Secure initialization ke liye zaroori
 
 # ===== ENVIRONMENT VARIABLES =====
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -15,18 +16,29 @@ if not GROQ_API_KEY:
     
 client = Groq(api_key=GROQ_API_KEY)
 
-# ===== FIREBASE SETUP =====
-# ✅ FIX: Explicitly provide the Project ID for secure token verification 
-# without needing a full service account JSON file.
+# ===== FIREBASE SETUP (Production Ready & Secure) =====
 if not firebase_admin._apps:
     try:
-        firebase_admin.initialize_app(options={'projectId': 'createra-ai'})
-        print("✅ Firebase Admin initialized successfully with Project ID: createra-ai")
+        # Render se credentials read karna aur \n (newline) ko fix karna
+        private_key = os.getenv("FIREBASE_PRIVATE_KEY", "").replace("\\n", "\n")
+        
+        cred_dict = {
+            "type": "service_account",
+            "project_id": os.getenv("FIREBASE_PROJECT_ID", "createra-ai"),
+            "private_key": private_key,
+            "client_email": os.getenv("FIREBASE_CLIENT_EMAIL", "")
+        }
+        
+        # Credentials object banana aur initialize karna
+        cred = credentials.Certificate(cred_dict)
+        firebase_admin.initialize_app(cred)
+        print("✅ Firebase Admin initialized successfully with Secure Service Account!")
+        
     except Exception as e:
-        print(f"⚠️ Firebase Admin initialization warning: {e}")
+        print(f"⚠️ Firebase Admin initialization failed: {e}")
 
 # ===== FASTAPI APP =====
-app = FastAPI(title="Createra AI Backend", version="3.1.0")
+app = FastAPI(title="Createra AI Backend", version="3.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -59,7 +71,7 @@ async def verify_firebase_token(authorization: str = Header(None)):
     
     token = authorization.split("Bearer ")[1]
     try:
-        # ✅ Ab ye perfectly kaam karega kyunki projectId upar set ho chuka hai
+        # ✅ Ab ye perfectly kaam karega kyunki secure credentials upar set ho chuke hain
         decoded_token = auth.verify_id_token(token)
         return decoded_token
     except Exception as e:
@@ -144,6 +156,6 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
 def health_check():
     return {
         "status": "online", 
-        "message": "Createra AI Backend v3.1.0 is running 24/7!",
-        "features": ["Text Generation", "Image Generation", "Attachment Metadata Handling", "Firebase Auth Verified"]
+        "message": "Createra AI Backend v3.2.0 is running 24/7!",
+        "features": ["Text Generation", "Image Generation", "Attachment Metadata Handling", "Secure Firebase Auth"]
     }
