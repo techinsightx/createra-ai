@@ -1,4 +1,4 @@
-# main.py (ABSOLUTE FINAL: Official Active Groq Model + Bulletproof Firebase)
+# main.py (LAST RESORT: Most Stable Legacy Model)
 import os
 import json
 import logging
@@ -31,7 +31,7 @@ if not firebase_admin._apps:
     except Exception as e:
         logger.error(f"⚠️ Firebase failed: {e}")
 
-app = FastAPI(title="Createra AI Backend", version="8.0.0-FINAL")
+app = FastAPI(title="Createra AI Backend", version="9.0.0-LAST-RESORT")
 
 app.add_middleware(
     CORSMiddleware,
@@ -84,19 +84,19 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
         system_prompt = f"""You are 'Createra AI', a world-class AI assistant.
 Target Audience: {request.target_audience}
 Required Output Format: {request.output_format}
-Instructions: Provide professional, structured output using Markdown (headings, bold, bullet points)."""
+Instructions: Provide professional, structured output using Markdown."""
         
         user_content = request.user_idea
         if request.attachment:
             user_content += f"\n\n[Attached file: {request.attachment.name}]"
 
-        # 🧠 GROQ API CALL (✅ ABSOLUTE FINAL FIX: Using 'gemma2-9b-it' which is officially listed as active and stable)
+        # 🧠 GROQ API CALL (✅ LAST RESORT: Using the most stable legacy model)
         chat_completion = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}
             ],
-            model="gemma2-9b-it",  # <--- OFFICIALLY ACTIVE & STABLE MODEL ON GROQ!
+            model="llama3-70b-8192",  # <--- MOST STABLE LEGACY MODEL
             temperature=0.7,
             max_tokens=1500,
         )
@@ -106,11 +106,11 @@ Instructions: Provide professional, structured output using Markdown (headings, 
         
     except APIError as e:
         logger.error(f"Groq API Error: {e}")
-        raise HTTPException(status_code=500, detail=f"AI Provider Error: {str(e)}. If this says 'decommissioned', please generate a BRAND NEW Groq API Key at console.groq.com/keys")
+        raise HTTPException(status_code=500, detail=f"AI Provider Error: {str(e)}")
     except Exception as e:
         logger.error(f"Unexpected Backend Error: {e}")
         raise HTTPException(status_code=500, detail=f"Backend Error: {str(e)}")
 
 @app.get("/")
 def health_check():
-    return {"status": "online", "message": "Createra AI v8.0 (Final Stable) is live!"}
+    return {"status": "online", "message": "Createra AI v9.0 (Last Resort) is live!"}
