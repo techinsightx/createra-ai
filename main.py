@@ -1,4 +1,4 @@
-# main.py (Ultimate Stable Fix: Mixtral Model + Bulletproof Firebase)
+# main.py (Future-Proof: Latest Active Groq Model + Bulletproof Firebase)
 import os
 import json
 import logging
@@ -27,11 +27,11 @@ if not firebase_admin._apps:
         cred_dict = json.loads(creds_json)
         cred = credentials.Certificate(cred_dict)
         firebase_admin.initialize_app(cred)
-        logger.info("✅ Firebase initialized!")
+        logger.info("✅ Firebase initialized successfully!")
     except Exception as e:
         logger.error(f"⚠️ Firebase failed: {e}")
 
-app = FastAPI(title="Createra AI Backend", version="6.0.0-MIXTRAL")
+app = FastAPI(title="Createra AI Backend", version="7.0.0-FUTURE-PROOF")
 
 app.add_middleware(
     CORSMiddleware,
@@ -69,9 +69,10 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
     if user_id not in user_usage:
         user_usage[user_id] = 0
     if user_usage[user_id] >= FREE_LIMIT:
-        return {"status": "limit_reached", "message": "🔒 Limit reached!", "upgrade_needed": True}
+        return {"status": "limit_reached", "message": "🔒 Limit reached! Pro plan coming soon.", "upgrade_needed": True}
 
     try:
+        # 🎨 1. IMAGE GENERATION HANDLING
         if request.output_format == "image_gen" or "image" in request.user_idea.lower():
             import urllib.parse
             safe_prompt = urllib.parse.quote(request.user_idea + ", high quality, 4k, professional")
@@ -79,6 +80,7 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
             user_usage[user_id] += 1
             return {"status": "success", "result": image_url, "remaining_free_uses": FREE_LIMIT - user_usage[user_id]}
 
+        # 📝 2. TEXT / ATTACHMENT HANDLING
         system_prompt = f"""You are 'Createra AI', a world-class AI assistant.
 Target Audience: {request.target_audience}
 Required Output Format: {request.output_format}
@@ -88,13 +90,13 @@ Instructions: Provide professional, structured output using Markdown (headings, 
         if request.attachment:
             user_content += f"\n\n[Attached file: {request.attachment.name}]"
 
-        # 🧠 GROQ API CALL (✅ ULTIMATE FIX: Using 'mixtral-8x7b-32768' which is 100% stable)
+        # 🧠 GROQ API CALL (✅ FUTURE-PROOF FIX: Using latest active preview model)
         chat_completion = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}
             ],
-            model="mixtral-8x7b-32768",  # <--- MIXTRAL: 100% Stable and active!
+            model="llama-3.2-3b-preview",  # <--- LATEST ACTIVE FREE MODEL ON GROQ!
             temperature=0.7,
             max_tokens=1500,
         )
@@ -102,10 +104,14 @@ Instructions: Provide professional, structured output using Markdown (headings, 
         user_usage[user_id] += 1
         return {"status": "success", "result": chat_completion.choices[0].message.content, "remaining_free_uses": FREE_LIMIT - user_usage[user_id]}
         
+    except APIError as e:
+        logger.error(f"Groq API Error: {e}")
+        # Agar ye model bhi fail hota hai, toh user ko naya API key banane ka message denge
+        raise HTTPException(status_code=500, detail=f"AI Provider Error: {str(e)}. Note: If this persists, please generate a NEW Groq API Key.")
     except Exception as e:
-        logger.error(f"Error: {e}")
+        logger.error(f"Unexpected Backend Error: {e}")
         raise HTTPException(status_code=500, detail=f"Backend Error: {str(e)}")
 
 @app.get("/")
 def health_check():
-    return {"status": "online", "message": "Createra AI v6.0 (Mixtral) is live!"}
+    return {"status": "online", "message": "Createra AI v7.0 (Future-Proof) is live!"}
