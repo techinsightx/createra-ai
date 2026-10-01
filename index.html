@@ -143,20 +143,35 @@
         .message.ai:hover .copy-btn { opacity: 1; }
         .copy-btn:hover { background: rgba(255,255,255,0.1); color: white; }
 
-        /* ===== MARKDOWN STYLING (WORLD-CLASS) ===== */
+        /* ===== MARKDOWN & CODE STYLING (WORLD-CLASS) ===== */
         .markdown-body { font-size: 0.95rem; line-height: 1.7; color: var(--text-primary); }
         .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 16px; margin-bottom: 8px; font-weight: 700; color: var(--accent-secondary); }
         .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 12px; }
         .markdown-body p { margin-bottom: 12px; }
+        
         .markdown-body pre {
             background: #0d1117; border: 1px solid var(--border-color); border-radius: 8px;
-            padding: 12px; overflow-x: auto; margin: 12px 0;
+            margin: 12px 0; overflow: hidden;
+        }
+        .code-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #161b22; padding: 8px 12px; border-bottom: 1px solid var(--border-color);
+            font-size: 0.75rem; color: var(--text-secondary); font-family: monospace;
+        }
+        .code-copy-btn {
+            background: rgba(255,255,255,0.1); border: none; color: var(--text-secondary);
+            padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem;
+            transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+        }
+        .code-copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+        .markdown-body pre code {
+            display: block; padding: 12px; overflow-x: auto; background: transparent !important;
+            font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.85rem;
         }
         .markdown-body code {
             font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.85rem;
             background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;
         }
-        .markdown-body pre code { background: transparent; padding: 0; }
 
         /* ===== INPUT COMMAND CENTER ===== */
         .input-container { padding: 20px 24px 24px; background: linear-gradient(to top, var(--bg-primary) 80%, transparent); }
@@ -203,13 +218,21 @@
         .input-box textarea:focus { outline: none; }
         .input-box textarea::placeholder { color: #64748b; }
 
+        .send-btn, .stop-btn {
+            width: 40px; height: 40px; border: none; border-radius: 10px; color: white;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0;
+        }
         .send-btn {
-            width: 40px; height: 40px; background: var(--accent-gradient); border: none;
-            border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; transition: all 0.2s; flex-shrink: 0; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            background: var(--accent-gradient); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
         .send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .stop-btn {
+            background: var(--error); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); display: none;
+        }
+        .stop-btn:hover { transform: scale(1.05); }
 
         .listening-pill {
             position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
@@ -230,6 +253,16 @@
         }
         .file-preview-bar.active { display: flex; }
         .remove-file { cursor: pointer; color: var(--error); font-weight: bold; padding: 0 5px; }
+
+        /* ===== TYPING INDICATOR ===== */
+        .typing-dots { display: flex; gap: 4px; padding: 8px 0; align-items: center; }
+        .typing-dots span {
+            width: 8px; height: 8px; background: var(--accent-secondary);
+            border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
         /* ===== MODAL & TOAST ===== */
         .modal-overlay {
@@ -360,6 +393,9 @@
                     <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
+                    <button class="stop-btn" id="stopBtn" onclick="stopGeneration()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -405,6 +441,7 @@
         let currentChatId = 'default';
         let attachedFile = null;
         let isLoginMode = true;
+        let currentAbortController = null;
 
         // ===== SPEECH RECOGNITION =====
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -578,7 +615,7 @@
 
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
 
-        // ===== MESSAGE RENDERING (WORLD-CLASS MARKDOWN) =====
+        // ===== MESSAGE RENDERING (WORLD-CLASS MARKDOWN + CODE COPY) =====
         function renderMessage(text, type, attachment = null) {
             const area = document.getElementById('chatArea');
             const div = document.createElement('div');
@@ -595,7 +632,6 @@
                     content += `<img src="${text}" alt="Generated Image" style="max-width: 100%; border-radius: 12px; margin-top: 10px;">`;
                     content += `<div style="margin-top:8px; font-size:0.85rem; color:var(--text-secondary)">✨ Image generated successfully! Right-click to save.</div>`;
                 } else {
-                    // 🌟 Rich Markdown Rendering
                     const parsedText = marked.parse(text);
                     content += `<div class="markdown-body">${parsedText}</div>`;
                     content += `<button class="copy-btn" onclick="copyToClipboard(this, \`${encodeURIComponent(text)}\`)">📋 Copy</button>`;
@@ -607,9 +643,23 @@
             div.innerHTML = content;
             area.appendChild(div);
             
-            // 🌟 Apply Syntax Highlighting to Code Blocks
-            div.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
+            // 🌟 Add Copy Buttons to Code Blocks
+            div.querySelectorAll('pre').forEach((pre) => {
+                const code = pre.querySelector('code');
+                if (code) {
+                    hljs.highlightElement(code);
+                    const lang = code.className.replace('language-', '') || 'code';
+                    const header = document.createElement('div');
+                    header.className = 'code-header';
+                    header.innerHTML = `
+                        <span>${lang}</span>
+                        <button class="code-copy-btn" onclick="copyCodeToClipboard(this)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy
+                        </button>
+                    `;
+                    pre.insertBefore(header, pre.firstChild);
+                }
             });
             
             area.scrollTop = area.scrollHeight;
@@ -624,7 +674,17 @@
             });
         };
 
-        // ===== CORE AI LOGIC =====
+        window.copyCodeToClipboard = (btn) => {
+            const code = btn.closest('pre').querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '✅ Copied!';
+                showToast('Code copied!', 'success');
+                setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+            });
+        };
+
+        // ===== CORE AI LOGIC WITH ABORT CONTROLLER =====
         window.sendMessage = async () => {
             const input = document.getElementById('userInput');
             const idea = input.value.trim();
@@ -646,13 +706,15 @@
             const fileToSend = attachedFile;
             clearFile();
             
-            document.getElementById('sendBtn').disabled = true;
+            // Toggle buttons
+            document.getElementById('sendBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'flex';
             
             const area = document.getElementById('chatArea');
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message ai';
             typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = `<div class="label">⚡ CREATERA AI</div><i>Processing your request...</i>`;
+            typingDiv.innerHTML = `<div class="label">⚡ CREATERA AI</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
             area.appendChild(typingDiv);
             area.scrollTop = area.scrollHeight;
 
@@ -660,6 +722,7 @@
             const format = document.getElementById('format').value;
 
             try {
+                currentAbortController = new AbortController();
                 const payload = {
                     user_idea: idea,
                     target_audience: audience,
@@ -673,7 +736,8 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${currentUserToken}`
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: currentAbortController.signal
                 });
 
                 let data;
@@ -701,12 +765,24 @@
                 }
             } catch (error) {
                 document.getElementById('typingIndicator')?.remove();
-                renderMessage('⚠️ Network error. Please check your internet connection.', 'ai');
-                showToast('Connection error', 'error');
+                if (error.name === 'AbortError') {
+                    renderMessage('⏹️ Generation stopped by user.', 'ai');
+                } else {
+                    renderMessage('⚠️ Network error. Please check your internet connection.', 'ai');
+                    showToast('Connection error', 'error');
+                }
+            } finally {
+                currentAbortController = null;
+                document.getElementById('sendBtn').style.display = 'flex';
+                document.getElementById('stopBtn').style.display = 'none';
+                input.focus();
             }
+        };
 
-            document.getElementById('sendBtn').disabled = false;
-            input.focus();
+        window.stopGeneration = () => {
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
         };
 
         function showToast(msg, type) {
