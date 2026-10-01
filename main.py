@@ -1,4 +1,4 @@
-# main.py (FIXED: Using ultra-stable gemini-1.5-pro model)
+# main.py (FIXED: Using latest gemini-2.0-flash model)
 import os
 import json
 import logging
@@ -20,9 +20,9 @@ if not GEMINI_API_KEY:
     logger.warning("⚠️ WARNING: GEMINI_API_KEY is not set!")
 else:
     genai.configure(api_key=GEMINI_API_KEY)
-    # ✅ FIX: Use 'gemini-1.5-pro' which is the most stable and universally available model
-    model = genai.GenerativeModel('gemini-1.5-pro')
-    logger.info("✅ Google Gemini API initialized successfully with gemini-1.5-pro!")
+    # ✅ FIX: Use 'gemini-2.0-flash' which is Google's latest stable model
+    model = genai.GenerativeModel('gemini-2.0-flash')
+    logger.info("✅ Google Gemini API initialized with gemini-2.0-flash!")
 
 # ===== FIREBASE SETUP =====
 if not firebase_admin._apps:
@@ -37,7 +37,7 @@ if not firebase_admin._apps:
     except Exception as e:
         logger.error(f"⚠️ Firebase failed: {e}")
 
-app = FastAPI(title="Createra AI Backend", version="10.2.0-PRO")
+app = FastAPI(title="Createra AI Backend", version="11.0.0-GEMINI-2")
 
 app.add_middleware(
     CORSMiddleware,
@@ -112,4 +112,4 @@ Instructions: Provide professional, structured output using Markdown (headings, 
 
 @app.get("/")
 def health_check():
-    return {"status": "online", "message": "Createra AI v10.2 (Gemini Pro) is live!"}
+    return {"status": "online", "message": "Createra AI v11.0 (Gemini 2.0 Flash) is live!"}
