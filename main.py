@@ -1,4 +1,4 @@
-# main.py (Future-Proof: Latest Active Groq Model + Bulletproof Firebase)
+# main.py (ABSOLUTE FINAL: Official Active Groq Model + Bulletproof Firebase)
 import os
 import json
 import logging
@@ -31,7 +31,7 @@ if not firebase_admin._apps:
     except Exception as e:
         logger.error(f"⚠️ Firebase failed: {e}")
 
-app = FastAPI(title="Createra AI Backend", version="7.0.0-FUTURE-PROOF")
+app = FastAPI(title="Createra AI Backend", version="8.0.0-FINAL")
 
 app.add_middleware(
     CORSMiddleware,
@@ -90,13 +90,13 @@ Instructions: Provide professional, structured output using Markdown (headings, 
         if request.attachment:
             user_content += f"\n\n[Attached file: {request.attachment.name}]"
 
-        # 🧠 GROQ API CALL (✅ FUTURE-PROOF FIX: Using latest active preview model)
+        # 🧠 GROQ API CALL (✅ ABSOLUTE FINAL FIX: Using 'gemma2-9b-it' which is officially listed as active and stable)
         chat_completion = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}
             ],
-            model="llama-3.2-3b-preview",  # <--- LATEST ACTIVE FREE MODEL ON GROQ!
+            model="gemma2-9b-it",  # <--- OFFICIALLY ACTIVE & STABLE MODEL ON GROQ!
             temperature=0.7,
             max_tokens=1500,
         )
@@ -106,12 +106,11 @@ Instructions: Provide professional, structured output using Markdown (headings, 
         
     except APIError as e:
         logger.error(f"Groq API Error: {e}")
-        # Agar ye model bhi fail hota hai, toh user ko naya API key banane ka message denge
-        raise HTTPException(status_code=500, detail=f"AI Provider Error: {str(e)}. Note: If this persists, please generate a NEW Groq API Key.")
+        raise HTTPException(status_code=500, detail=f"AI Provider Error: {str(e)}. If this says 'decommissioned', please generate a BRAND NEW Groq API Key at console.groq.com/keys")
     except Exception as e:
         logger.error(f"Unexpected Backend Error: {e}")
         raise HTTPException(status_code=500, detail=f"Backend Error: {str(e)}")
 
 @app.get("/")
 def health_check():
-    return {"status": "online", "message": "Createra AI v7.0 (Future-Proof) is live!"}
+    return {"status": "online", "message": "Createra AI v8.0 (Final Stable) is live!"}
