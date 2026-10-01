@@ -1,24 +1,30 @@
-# main.py (LAST RESORT: Most Stable Legacy Model)
+# main.py (PERMANENT FIX: Switched to Google Gemini API - 100% Free & Stable)
 import os
 import json
 import logging
+import urllib.parse
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from groq import Groq, APIError
+import google.generativeai as genai
 import firebase_admin
 from firebase_admin import auth, credentials
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("createra-backend")
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-if not GROQ_API_KEY:
-    logger.warning("⚠️ WARNING: GROQ_API_KEY is not set!")
-    
-client = Groq(api_key=GROQ_API_KEY)
+# ===== GEMINI SETUP =====
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    logger.warning("⚠️ WARNING: GEMINI_API_KEY is not set!")
+else:
+    genai.configure(api_key=GEMINI_API_KEY)
+    # Use gemini-1.5-flash: It's free, super fast, and highly reliable
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    logger.info("✅ Google Gemini API initialized successfully!")
 
+# ===== FIREBASE SETUP =====
 if not firebase_admin._apps:
     try:
         creds_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
@@ -31,7 +37,7 @@ if not firebase_admin._apps:
     except Exception as e:
         logger.error(f"⚠️ Firebase failed: {e}")
 
-app = FastAPI(title="Createra AI Backend", version="9.0.0-LAST-RESORT")
+app = FastAPI(title="Createra AI Backend", version="10.0.0-GEMINI")
 
 app.add_middleware(
     CORSMiddleware,
@@ -72,45 +78,38 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
         return {"status": "limit_reached", "message": "🔒 Limit reached! Pro plan coming soon.", "upgrade_needed": True}
 
     try:
-        # 🎨 1. IMAGE GENERATION HANDLING
+        # 🎨 1. IMAGE GENERATION HANDLING (Remains same, uses Pollinations)
         if request.output_format == "image_gen" or "image" in request.user_idea.lower():
-            import urllib.parse
             safe_prompt = urllib.parse.quote(request.user_idea + ", high quality, 4k, professional")
             image_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1024&height=1024&nologo=true"
             user_usage[user_id] += 1
             return {"status": "success", "result": image_url, "remaining_free_uses": FREE_LIMIT - user_usage[user_id]}
 
-        # 📝 2. TEXT / ATTACHMENT HANDLING
+        # 📝 2. TEXT / ATTACHMENT HANDLING (Now using Gemini)
         system_prompt = f"""You are 'Createra AI', a world-class AI assistant.
 Target Audience: {request.target_audience}
 Required Output Format: {request.output_format}
-Instructions: Provide professional, structured output using Markdown."""
+Instructions: Provide professional, structured output using Markdown (headings, bold, bullet points)."""
         
         user_content = request.user_idea
         if request.attachment:
-            user_content += f"\n\n[Attached file: {request.attachment.name}]"
+            user_content += f"\n\n[Attached file: {request.attachment.name}. Acknowledge it and provide relevant insights.]"
 
-        # 🧠 GROQ API CALL (✅ LAST RESORT: Using the most stable legacy model)
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content}
-            ],
-            model="llama3-70b-8192",  # <--- MOST STABLE LEGACY MODEL
-            temperature=0.7,
-            max_tokens=1500,
-        )
+        # 🧠 GEMINI API CALL (✅ PERMANENT FIX: No more decommission errors!)
+        full_prompt = f"{system_prompt}\n\nUser Request: {user_content}"
+        response = model.generate_content(full_prompt)
         
         user_usage[user_id] += 1
-        return {"status": "success", "result": chat_completion.choices[0].message.content, "remaining_free_uses": FREE_LIMIT - user_usage[user_id]}
+        return {
+            "status": "success", 
+            "result": response.text, 
+            "remaining_free_uses": FREE_LIMIT - user_usage[user_id]
+        }
         
-    except APIError as e:
-        logger.error(f"Groq API Error: {e}")
-        raise HTTPException(status_code=500, detail=f"AI Provider Error: {str(e)}")
     except Exception as e:
-        logger.error(f"Unexpected Backend Error: {e}")
+        logger.error(f"AI Provider Error: {e}")
         raise HTTPException(status_code=500, detail=f"Backend Error: {str(e)}")
 
 @app.get("/")
 def health_check():
-    return {"status": "online", "message": "Createra AI v9.0 (Last Resort) is live!"}
+    return {"status": "online", "message": "Createra AI v10.0 (Gemini Powered) is live!"}

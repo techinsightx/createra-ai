@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-groq
-firebase-admin
 pydantic
-python-dotenv
+firebase-admin
+google-generativeai
