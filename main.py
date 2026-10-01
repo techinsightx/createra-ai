@@ -1,4 +1,4 @@
-# main.py (PERMANENT FIX: Switched to Google Gemini API - 100% Free & Stable)
+# main.py (FIXED: Updated Gemini Model Name to avoid 404)
 import os
 import json
 import logging
@@ -20,8 +20,8 @@ if not GEMINI_API_KEY:
     logger.warning("⚠️ WARNING: GEMINI_API_KEY is not set!")
 else:
     genai.configure(api_key=GEMINI_API_KEY)
-    # Use gemini-1.5-flash: It's free, super fast, and highly reliable
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # ✅ FIX: Use '-latest' suffix to always get the active, supported version
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
     logger.info("✅ Google Gemini API initialized successfully!")
 
 # ===== FIREBASE SETUP =====
@@ -37,7 +37,7 @@ if not firebase_admin._apps:
     except Exception as e:
         logger.error(f"⚠️ Firebase failed: {e}")
 
-app = FastAPI(title="Createra AI Backend", version="10.0.0-GEMINI")
+app = FastAPI(title="Createra AI Backend", version="10.1.0-GEMINI-FIX")
 
 app.add_middleware(
     CORSMiddleware,
@@ -78,14 +78,14 @@ def createra_agent(request: TaskRequest, user: dict = Depends(verify_firebase_to
         return {"status": "limit_reached", "message": "🔒 Limit reached! Pro plan coming soon.", "upgrade_needed": True}
 
     try:
-        # 🎨 1. IMAGE GENERATION HANDLING (Remains same, uses Pollinations)
+        # 🎨 1. IMAGE GENERATION HANDLING
         if request.output_format == "image_gen" or "image" in request.user_idea.lower():
             safe_prompt = urllib.parse.quote(request.user_idea + ", high quality, 4k, professional")
             image_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1024&height=1024&nologo=true"
             user_usage[user_id] += 1
             return {"status": "success", "result": image_url, "remaining_free_uses": FREE_LIMIT - user_usage[user_id]}
 
-        # 📝 2. TEXT / ATTACHMENT HANDLING (Now using Gemini)
+        # 📝 2. TEXT / ATTACHMENT HANDLING
         system_prompt = f"""You are 'Createra AI', a world-class AI assistant.
 Target Audience: {request.target_audience}
 Required Output Format: {request.output_format}
@@ -95,7 +95,7 @@ Instructions: Provide professional, structured output using Markdown (headings, 
         if request.attachment:
             user_content += f"\n\n[Attached file: {request.attachment.name}. Acknowledge it and provide relevant insights.]"
 
-        # 🧠 GEMINI API CALL (✅ PERMANENT FIX: No more decommission errors!)
+        # 🧠 GEMINI API CALL
         full_prompt = f"{system_prompt}\n\nUser Request: {user_content}"
         response = model.generate_content(full_prompt)
         
@@ -112,4 +112,4 @@ Instructions: Provide professional, structured output using Markdown (headings, 
 
 @app.get("/")
 def health_check():
-    return {"status": "online", "message": "Createra AI v10.0 (Gemini Powered) is live!"}
+    return {"status": "online", "message": "Createra AI v10.1 (Gemini Fixed) is live!"}
