@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- viewport-fit=cover aur maximum-scale mobile optimization ke liye zaroori hain -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Createra AI — Ultimate Multimodal Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,17 +30,23 @@
             --mic-active: #ef4444;
         }
 
+        /* 🌟 ULTIMATE LAYOUT FIX: Prevents any hiding or overflowing */
+        html, body {
+            height: 100%;
+            height: 100dvh; /* Modern dynamic viewport */
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Stops whole page scroll, lets chat-area handle it */
+            overscroll-behavior: none;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            /* 🌟 MOBILE OPTIMIZATION: Dynamic Viewport Height */
-            height: 100dvh;
-            height: 100vh; /* Fallback for older browsers */
             display: flex;
-            overflow: hidden;
             background-image: 
                 radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.05), transparent 40%),
                 radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.05), transparent 40%),
@@ -100,12 +105,13 @@
             display: flex; 
             flex-direction: column; 
             height: 100%; 
-            overflow: hidden; /* Prevents whole page scroll */
+            height: 100dvh;
+            overflow: hidden; 
             position: relative; 
         }
         .top-bar {
             padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex;
-            justify-content: space-between; align-items: center; background: rgba(2, 6, 23, 0.8);
+            justify-content: space-between; align-items: center; background: rgba(2, 6, 23, 0.9);
             backdrop-filter: blur(12px); flex-shrink: 0;
         }
         .menu-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; padding: 4px; }
@@ -121,7 +127,8 @@
             gap: 20px;
             scroll-behavior: smooth;
             min-height: 0; /* 🌟 CRITICAL: Fixes flexbox scrolling overflow issues */
-            -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
         .chat-area::-webkit-scrollbar { width: 6px; }
         .chat-area::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
@@ -193,9 +200,9 @@
         .input-container { 
             flex-shrink: 0; /* 🌟 CRITICAL: Prevents input box from shrinking/hiding */
             padding: 16px 24px;
-            /* 🌟 CRITICAL: Safe area for iPhone home indicator + keyboard handling */
             padding-bottom: calc(16px + env(safe-area-inset-bottom)); 
-            background: linear-gradient(to top, var(--bg-primary) 90%, transparent);
+            background: var(--bg-primary); /* Solid background to prevent chat bleed-through */
+            border-top: 1px solid var(--border-color);
         }
         .input-island {
             background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 20px;
@@ -208,7 +215,7 @@
         .options-row { display: flex; gap: 8px; margin-bottom: 10px; padding: 0 4px; }
         .options-row select {
             padding: 8px 10px; background: var(--bg-primary); border: 1px solid var(--border-color);
-            border-radius: 8px; color: var(--text-secondary); font-size: 16px; /* 🌟 16px prevents iOS auto-zoom */
+            border-radius: 8px; color: var(--text-secondary); font-size: 16px; /* Prevents iOS auto-zoom */
             cursor: pointer; font-family: inherit; flex: 1;
         }
         .options-row select:focus { outline: none; border-color: var(--accent-primary); color: white; }
@@ -236,7 +243,7 @@
 
         .input-box textarea {
             flex: 1; background: transparent; border: none; color: var(--text-primary); 
-            font-size: 16px; /* 🌟 16px prevents iOS auto-zoom */
+            font-size: 16px; /* Prevents iOS auto-zoom */
             font-family: inherit; resize: none; max-height: 120px; padding: 10px 0; line-height: 1.5;
         }
         .input-box textarea:focus { outline: none; }
@@ -318,7 +325,7 @@
         .toast.success { border-color: var(--success); color: var(--success); }
         .toast.error { border-color: var(--error); color: var(--error); }
 
-        /* 🌟 MOBILE SPECIFIC OPTIMIZATIONS */
+        /* ===== MOBILE SPECIFIC ===== */
         .sidebar-overlay {
             display: none;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -331,7 +338,7 @@
             .sidebar { 
                 position: fixed; top: 0; left: 0;
                 width: 85%; max-width: 300px;
-                height: 100dvh; height: 100vh;
+                height: 100%; height: 100dvh;
                 transform: translateX(-100%); 
                 box-shadow: 10px 0 30px rgba(0,0,0,0.5); 
                 z-index: 50;
@@ -348,7 +355,6 @@
 </head>
 <body>
 
-    <!-- SIDEBAR OVERLAY (Mobile) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <!-- SIDEBAR -->
@@ -508,9 +514,7 @@
                 document.getElementById('listeningPill').classList.remove('active');
             };
 
-            recognition.onerror = (event) => {
-                if(isListening) recognition.stop();
-            };
+            recognition.onerror = () => { if(isListening) recognition.stop(); };
 
             recognition.onresult = (event) => {
                 let finalTranscript = '';
@@ -563,7 +567,7 @@
             const area = document.getElementById('chatArea');
             area.innerHTML = '';
             if (chat && chat.messages) {
-                chat.messages.forEach(msg => renderMessage(msg.text, msg.type, msg.attachment));
+                chat.messages.forEach(msg => renderMessage(msg.text, msg.type, msg.attachment, false));
             } else {
                 area.innerHTML = `<div class="message ai"><div class="label">⚡ CREATERA AI</div>Start a new conversation!</div>`;
             }
@@ -652,8 +656,8 @@
             document.getElementById('sidebarOverlay').classList.toggle('active');
         };
 
-        // ===== MESSAGE RENDERING =====
-        function renderMessage(text, type, attachment = null) {
+        // ===== MESSAGE RENDERING & TYPEWRITER EFFECT =====
+        function renderMessage(text, type, attachment = null, animate = true) {
             const area = document.getElementById('chatArea');
             const div = document.createElement('div');
             div.className = `message ${type}`;
@@ -668,21 +672,71 @@
                 if (text.startsWith('http') && (text.includes('.jpg') || text.includes('.png') || text.includes('pollinations'))) {
                     content += `<img src="${text}" alt="Generated Image" style="max-width: 100%; border-radius: 12px; margin-top: 10px;">`;
                     content += `<div style="margin-top:8px; font-size:0.85rem; color:var(--text-secondary)">✨ Image generated! Long-press to save.</div>`;
+                    div.innerHTML = content;
+                    area.appendChild(div);
                 } else {
-                    const parsedText = marked.parse(text);
-                    content += `<div class="markdown-body">${parsedText}</div>`;
-                    content += `<button class="copy-btn" onclick="copyToClipboard(this, \`${encodeURIComponent(text)}\`)">📋 Copy</button>`;
+                    // 🌟 LIVE TYPEWRITER EFFECT WITH MARKDOWN
+                    content += `<div class="markdown-body"></div>`;
+                    content += `<button class="copy-btn" style="display:none;">📋 Copy</button>`;
+                    div.innerHTML = content;
+                    area.appendChild(div);
+                    
+                    if (animate) {
+                        typeWriterEffect(div.querySelector('.markdown-body'), div.querySelector('.copy-btn'), text);
+                    } else {
+                        div.querySelector('.markdown-body').innerHTML = marked.parse(text);
+                        addCopyButtons(div);
+                    }
                 }
             } else {
                 content += `<div class="markdown-body">${text.replace(/\n/g, '<br>')}</div>`;
+                div.innerHTML = content;
+                area.appendChild(div);
             }
             
-            div.innerHTML = content;
-            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        // 🌟 ADVANCED TYPEWRITER FUNCTION
+        function typeWriterEffect(markdownDiv, copyBtn, fullText, speed = 15) {
+            let i = 0;
+            const chunkSize = 4; // Types 4 chars at a time for smoothness
             
-            div.querySelectorAll('pre').forEach((pre) => {
+            function type() {
+                if (i < fullText.length) {
+                    const currentText = fullText.substring(0, i + chunkSize);
+                    markdownDiv.innerHTML = marked.parse(currentText);
+                    
+                    // Highlight code blocks as they appear
+                    markdownDiv.querySelectorAll('pre code').forEach((block) => {
+                        if (!block.dataset.highlighted) {
+                            hljs.highlightElement(block);
+                            block.dataset.highlighted = "yes";
+                        }
+                    });
+                    
+                    const chatArea = document.getElementById('chatArea');
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    
+                    i += chunkSize;
+                    setTimeout(type, speed);
+                } else {
+                    // Final perfect render
+                    markdownDiv.innerHTML = marked.parse(fullText);
+                    addCopyButtons(markdownDiv.parentElement);
+                    copyBtn.style.display = 'block';
+                    
+                    const chatArea = document.getElementById('chatArea');
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
+            }
+            type();
+        }
+
+        function addCopyButtons(messageDiv) {
+            messageDiv.querySelectorAll('pre').forEach((pre) => {
                 const code = pre.querySelector('code');
-                if (code) {
+                if (code && !pre.querySelector('.code-header')) {
                     hljs.highlightElement(code);
                     const lang = code.className.replace('language-', '') || 'code';
                     const header = document.createElement('div');
@@ -691,8 +745,6 @@
                     pre.insertBefore(header, pre.firstChild);
                 }
             });
-            
-            area.scrollTop = area.scrollHeight;
         }
 
         window.copyToClipboard = (btn, encodedText) => {
@@ -727,7 +779,7 @@
 
             if(isListening && recognition) recognition.stop();
 
-            renderMessage(idea, 'user', attachedFile);
+            renderMessage(idea, 'user', attachedFile, false);
             saveMessageToHistory(idea, 'user', attachedFile);
             
             input.value = '';
@@ -766,18 +818,18 @@
                 document.getElementById('typingIndicator')?.remove();
 
                 if (!response.ok) {
-                    renderMessage(`⚠️ Error: ${data.detail || data.message || 'Server Error'}`, 'ai');
+                    renderMessage(`⚠️ Error: ${data.detail || data.message || 'Server Error'}`, 'ai', null, false);
                 } else if (data.status === 'limit_reached') {
-                    renderMessage(data.message, 'ai');
+                    renderMessage(data.message, 'ai', null, false);
                     showToast('Free limit reached!', 'error');
                 } else if (data.result) {
-                    renderMessage(data.result, 'ai');
+                    renderMessage(data.result, 'ai', null, true); // 🌟 TRUE = Animate!
                     saveMessageToHistory(data.result, 'ai');
                 }
             } catch (error) {
                 document.getElementById('typingIndicator')?.remove();
-                if (error.name === 'AbortError') renderMessage('⏹️ Generation stopped.', 'ai');
-                else renderMessage('⚠️ Network error. Check connection.', 'ai');
+                if (error.name === 'AbortError') renderMessage('⏹️ Generation stopped.', 'ai', null, false);
+                else renderMessage('⚠️ Network error. Check connection.', 'ai', null, false);
             } finally {
                 currentAbortController = null;
                 document.getElementById('sendBtn').style.display = 'flex';
