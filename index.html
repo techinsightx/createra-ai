@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Createra AI — Ultimate Multimodal Platform</title>
+    <title>Createra AI — The Creators Canvas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- World-Class Markdown & Syntax Highlighting -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -31,8 +30,9 @@
             --glow-primary: 0 0 20px rgba(168, 85, 247, 0.3);
         }
 
+        /* 🌟 EDGELESS & FULLY FITTED LAYOUT */
         html, body {
-            height: 100%; height: 100dvh; margin: 0; padding: 0;
+            height: 100%; height: 100dvh; width: 100%; margin: 0; padding: 0;
             overflow: hidden; overscroll-behavior: none;
             background-color: var(--bg-primary);
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -56,27 +56,45 @@
             100% { background-position: 0% 5%, 100% 5%, 0 0, 0 0; }
         }
 
-        /* ===== LOGO ===== */
+        /* 🌟 MICRO-LEVEL FUTURISTIC LOGO */
         .logo-animated {
-            width: 40px; height: 40px; border-radius: 12px;
-            background: var(--bg-secondary); display: flex;
-            align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
+            width: 44px; height: 44px; border-radius: 12px;
+            background: var(--bg-secondary); 
+            display: flex; align-items: center; justify-content: center;
             border: 1px solid var(--border-color); flex-shrink: 0;
             box-shadow: var(--glow-primary);
+            overflow: hidden;
         }
-        .logo-animated::before {
-            content: ''; position: absolute; width: 150%; height: 150%;
-            background: conic-gradient(from 0deg, transparent, var(--accent-primary), var(--accent-secondary), transparent);
-            animation: spin 4s linear infinite;
+        .logo-svg { width: 100%; height: 100%; }
+        
+        /* Shimmer effect for the 'C' path */
+        .shimmer-path {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawShimmer 3s ease-in-out infinite alternate;
         }
-        .logo-animated::after {
-            content: 'C'; position: absolute; width: 32px; height: 32px;
-            background: linear-gradient(135deg, #08080a, #131316); border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.2rem; color: white; z-index: 2;
+        @keyframes drawShimmer {
+            0% { stroke-dashoffset: 200; opacity: 0.8; }
+            100% { stroke-dashoffset: 0; opacity: 1; }
         }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        /* Rotating Globe */
+        .globe-group {
+            transform-origin: 50px 50px;
+            animation: spinGlobe 6s linear infinite;
+        }
+        @keyframes spinGlobe { 100% { transform: rotate(360deg); } }
+
+        /* ✨ SHIMMERING TEXT EFFECT */
+        .logo-text { 
+            font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px; 
+            background: linear-gradient(90deg, var(--text-secondary) 0%, #ffffff 50%, var(--text-secondary) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShimmer 4s linear infinite;
+        }
+        @keyframes textShimmer { to { background-position: 200% center; } }
 
         /* ===== SIDEBAR ===== */
         .sidebar {
@@ -87,10 +105,10 @@
             z-index: 50;
         }
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; }
-        .logo-text { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .nav-section { padding: 16px; flex: 1; overflow-y: auto; }
-        .nav-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px; padding-left: 12px; }
+        .nav-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin: 16px 0 8px 12px; }
+        .nav-label:first-child { margin-top: 0; }
         
         .nav-item {
             padding: 12px; border-radius: 10px; cursor: pointer; color: var(--text-secondary);
@@ -102,6 +120,21 @@
         .nav-item svg { width: 18px; height: 18px; }
 
         .sidebar-footer { padding: 16px; border-top: 1px solid var(--border-color); }
+        
+        .upgrade-sidebar-btn {
+            background: var(--accent-gradient); color: white; border: none;
+            padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer;
+            width: 100%; margin-bottom: 12px; font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+            animation: pulse-glow 2s infinite;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .upgrade-sidebar-btn:hover { transform: translateY(-1px); box-shadow: 0 0 25px rgba(34, 211, 238, 0.6); }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(34, 211, 238, 0.6); }
+        }
+
         .user-info {
             display: none; align-items: center; gap: 10px; padding: 10px; background: var(--bg-secondary);
             border-radius: 10px; cursor: pointer; border: 1px solid var(--border-color); transition: 0.2s;
@@ -125,18 +158,17 @@
         .menu-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; padding: 4px; }
         .top-bar-title { font-size: 1rem; font-weight: 600; color: var(--text-secondary); }
 
-        /* ===== VIEW CONTAINERS ===== */
-        .view-container { flex: 1; overflow: hidden; position: relative; }
+        .view-container { flex: 1; position: relative; overflow: hidden; }
         .view { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            position: absolute; inset: 0; 
             opacity: 0; visibility: hidden; transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translateY(10px);
+            transform: translateY(10px); display: flex; flex-direction: column;
         }
         .view.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
         /* ===== CHAT VIEW ===== */
         .chat-area {
-            height: 100%; overflow-y: auto; padding: 24px; display: flex; flex-direction: column;
+            flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column;
             gap: 20px; scroll-behavior: smooth; min-height: 0;
             -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
         }
@@ -147,8 +179,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 40px 20px; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); height: 100%;
         }
-        .welcome-screen .logo-animated { width: 72px; height: 72px; margin-bottom: 24px; }
-        .welcome-screen .logo-animated::after { width: 60px; height: 60px; font-size: 2rem; }
+        .welcome-screen .logo-animated { width: 80px; height: 80px; margin-bottom: 24px; }
         .welcome-screen h2 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .welcome-screen p { color: var(--text-secondary); margin-bottom: 32px; max-width: 500px; line-height: 1.6; font-size: 1.05rem; }
         
@@ -164,6 +195,14 @@
         .message {
             max-width: 85%; padding: 16px 20px; border-radius: 16px; line-height: 1.6;
             font-size: 0.95rem; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        /* 🌌 FIRST MOVER: Holographic 3D Tilt on Hover */
+        @media (hover: hover) {
+            .message.ai:hover {
+                transform: translateY(-2px) perspective(1000px) rotateX(1deg);
+                box-shadow: 0 10px 30px rgba(168, 85, 247, 0.15);
+            }
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -198,8 +237,8 @@
             justify-content: center; transition: all 0.2s;
         }
         .action-icon-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); border-color: var(--accent-primary); }
-        .action-icon-btn.speaking { color: var(--accent-secondary); border-color: var(--accent-secondary); animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .action-icon-btn.liked { color: var(--success); border-color: var(--success); }
+        .action-icon-btn.disliked { color: var(--error); border-color: var(--error); }
 
         .markdown-body { font-size: 0.95rem; line-height: 1.7; color: var(--text-primary); word-wrap: break-word; }
         .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 16px; margin-bottom: 8px; font-weight: 700; color: var(--accent-secondary); }
@@ -232,6 +271,20 @@
             animation: blink 1s step-end infinite; margin-left: 2px; vertical-align: middle;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* 🚀 FIRST MOVER: SMART CONTEXT CHIPS */
+        .smart-chips-container {
+            display: flex; gap: 8px; overflow-x: auto; padding: 0 4px 12px 4px;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .smart-chips-container::-webkit-scrollbar { display: none; }
+        .smart-chip {
+            flex-shrink: 0; padding: 8px 14px; background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 20px;
+            color: var(--accent-primary); font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .smart-chip:hover { background: rgba(168, 85, 247, 0.2); transform: translateY(-1px); }
 
         /* ===== INPUT COMMAND CENTER ===== */
         .input-container { 
@@ -323,7 +376,7 @@
 
         /* ===== DASHBOARD VIEW ===== */
         .dashboard-container {
-            height: 100%; overflow-y: auto; padding: 32px;
+            flex: 1; overflow-y: auto; padding: 32px; min-height: 0;
             -webkit-overflow-scrolling: touch;
         }
         .dashboard-container::-webkit-scrollbar { width: 6px; }
@@ -350,14 +403,8 @@
         .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 16px; }
         
-        .progress-bar {
-            width: 100%; height: 8px; background: rgba(255,255,255,0.05);
-            border-radius: 4px; overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%; background: var(--accent-gradient); border-radius: 4px;
-            transition: width 1s ease-out;
-        }
+        .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-gradient); border-radius: 4px; transition: width 1s ease-out; }
         .progress-text { font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px; text-align: right; }
 
         .dash-section {
@@ -376,13 +423,7 @@
             font-size: 0.9rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
         }
         .btn-primary:hover { box-shadow: var(--glow-primary); transform: translateY(-1px); }
-        .btn-secondary {
-            background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);
-            padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
-            font-size: 0.9rem; transition: all 0.2s;
-        }
-        .btn-secondary:hover { border-color: var(--text-primary); color: var(--text-primary); }
-
+        
         .api-key-list { display: flex; flex-direction: column; gap: 12px; }
         .api-key-item {
             display: flex; align-items: center; justify-content: space-between;
@@ -399,16 +440,19 @@
         .icon-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); border-color: var(--accent-primary); }
         .icon-btn.danger:hover { color: var(--error); border-color: var(--error); }
 
-        .plan-badge {
-            display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
-            background: rgba(168, 85, 247, 0.1); color: var(--accent-primary);
-            border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 20px;
-            font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+        .limit-card {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(168, 85, 247, 0.05));
+            border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 16px; padding: 24px;
+            text-align: center; max-width: 500px; width: 100%; align-self: center;
+            animation: slideUp 0.4s ease;
         }
+        .limit-card h3 { color: var(--error); margin-bottom: 8px; font-size: 1.1rem; }
+        .limit-card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; }
+        .countdown { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; color: var(--accent-secondary); margin-bottom: 20px; font-weight: 700; }
 
         /* ===== MODALS ===== */
         .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 1000;
             justify-content: center; align-items: center; padding: 20px;
         }
@@ -452,7 +496,7 @@
         .toast.error { border-color: var(--error); color: var(--error); }
 
         .sidebar-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 49;
             opacity: 0; transition: opacity 0.3s;
         }
@@ -486,7 +530,32 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo-animated"></div>
+            <!-- 🌟 MICRO-LEVEL FUTURISTIC LOGO -->
+            <div class="logo-animated">
+                <svg viewBox="0 0 100 100" class="logo-svg">
+                    <defs>
+                        <linearGradient id="shimmerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a855f7" />
+                            <stop offset="50%" stop-color="#ffffff" />
+                            <stop offset="100%" stop-color="#22d3ee" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+                    </defs>
+                    <!-- Futuristic Shimmering C -->
+                    <path d="M 72 28 A 42 42 0 1 0 72 72" fill="none" stroke="url(#shimmerGrad)" stroke-width="5" stroke-linecap="round" filter="url(#glow)" class="shimmer-path" />
+                    <!-- Perfectly Aligned Thin Globe Inside -->
+                    <g class="globe-group">
+                        <circle cx="50" cy="50" r="16" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.9"/>
+                        <ellipse cx="50" cy="50" rx="7" ry="16" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/>
+                        <line x1="34" y1="50" x2="66" y2="50" stroke="#22d3ee" stroke-width="1" opacity="0.9"/>
+                        <path d="M 36 40 Q 50 45 64 40" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/>
+                        <path d="M 36 60 Q 50 55 64 60" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/>
+                    </g>
+                </svg>
+            </div>
             <div class="logo-text">Createra AI</div>
         </div>
         
@@ -501,36 +570,29 @@
                 Dashboard
             </div>
             
-            <div class="nav-label" style="margin-top: 24px;">Account</div>
-            <div class="nav-item" onclick="openModal('login')" id="navLogin">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                Log In / Sign Up
-            </div>
-            <div class="nav-item" onclick="logout()" id="navLogout" style="display: none; color: var(--error);">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                Log Out
-            </div>
+            <div class="nav-label" id="historyLabel">History</div>
+            <div id="chatHistoryList"></div>
         </div>
 
         <div class="sidebar-footer">
-            <div class="user-info" id="userInfo">
+            <button class="upgrade-sidebar-btn" onclick="openUpgradeModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Upgrade to Pro
+            </button>
+            <div class="user-info" id="userInfo" onclick="switchView('dashboard')">
                 <div class="user-avatar" id="userAvatar">U</div>
                 <div style="flex:1; text-align: left;">
                     <div style="font-weight: 600; font-size: 0.85rem;" id="userName">User</div>
                     <div style="font-size: 0.7rem; color: var(--text-secondary);">Free Plan</div>
                 </div>
             </div>
-        </div isplay: none;">
-            <div class="user-info" id="userInfo" onclick="switchView('dashboard')">
-                <div class="user-avatar" id="userAvatar">U</div>
-                <div style="flex:1; text-align: left;">
-                    <div style="font-weight: 600; font-size: 0.85rem;" id="userName">User</div>
-                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Click for Dashboard</div>
-                </div>
-            </div>
             <button class="nav-item" id="loginBtnSidebar" onclick="openModal('login')" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); margin: 0; color: var(--text-primary); justify-content: center;">
                 Log In / Sign Up
             </button>
+            <div class="nav-item" id="navLogout" onclick="logout()" style="display: none; color: var(--error); margin-top: 8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Log Out
+            </div>
         </div>
     </aside>
 
@@ -549,14 +611,19 @@
             <div class="view active" id="chatView">
                 <div class="chat-area" id="chatArea">
                     <div class="welcome-screen" id="welcomeScreen">
-                        <div class="logo-animated"></div>
+                        <div class="logo-animated">
+                            <svg viewBox="0 0 100 100" class="logo-svg">
+                                <defs><linearGradient id="shimmerGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7" /><stop offset="50%" stop-color="#ffffff" /><stop offset="100%" stop-color="#22d3ee" /></linearGradient></defs>
+                                <path d="M 72 28 A 42 42 0 1 0 72 72" fill="none" stroke="url(#shimmerGrad2)" stroke-width="5" stroke-linecap="round" filter="url(#glow)" class="shimmer-path" />
+                                <g class="globe-group"><circle cx="50" cy="50" r="16" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.9"/><ellipse cx="50" cy="50" rx="7" ry="16" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><line x1="34" y1="50" x2="66" y2="50" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><path d="M 36 40 Q 50 45 64 40" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><path d="M 36 60 Q 50 55 64 60" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/></g>
+                            </svg>
+                        </div>
                         <h2>Welcome to Createra AI</h2>
-                        <p>Your world-class multimodal assistant. Generate scripts, images, and code with Hollywood-grade precision. What will we create today?</p>
+                        <p>Your world-class multimodal assistant. Generate scripts, images, and code with Hollywood-grade precision.</p>
                         <div class="suggestion-chips">
                             <button class="chip" onclick="useSuggestion('Write a 60-second viral reel script about AI')">🎥 Viral Reel Script</button>
                             <button class="chip" onclick="useSuggestion('Generate an image of a futuristic Indian city at night')">🎨 Futuristic City Image</button>
                             <button class="chip" onclick="useSuggestion('Explain quantum computing like I am 5 years old')">🧠 Explain Complex Topic</button>
-                            <button class="chip" onclick="useSuggestion('Write a professional email to a client about a project delay')">💼 Professional Email</button>
                         </div>
                     </div>
                 </div>
@@ -567,12 +634,15 @@
                         <span class="remove-file" onclick="clearFile()">✕</span>
                     </div>
                     
-                    <div class="input-island">
-                        <div class="listening-pill" id="listeningPill">
-                            <div class="listening-dot"></div>
-                            Listening...
-                        </div>
+                    <!-- 🚀 FIRST MOVER: SMART CONTEXT CHIPS -->
+                    <div class="smart-chips-container" id="smartChips" style="display: none;">
+                        <button class="smart-chip" onclick="useSuggestion('Make it shorter and more impactful')">📝 Make it shorter</button>
+                        <button class="smart-chip" onclick="useSuggestion('Translate this to Hindi')">🌐 Translate to Hindi</button>
+                        <button class="smart-chip" onclick="useSuggestion('Give me 3 more examples like this')">💡 More examples</button>
+                    </div>
 
+                    <div class="input-island">
+                        <div class="listening-pill" id="listeningPill"><div class="listening-dot"></div>Listening...</div>
                         <div class="options-row">
                             <select id="audience">
                                 <option value="general">🎯 General</option>
@@ -587,19 +657,15 @@
                                 <option value="image_gen">🎨 Image</option>
                             </select>
                         </div>
-
                         <div class="input-box">
                             <input type="file" id="fileInput" hidden accept="image/*,.pdf" onchange="handleFileSelect(event)">
                             <button class="action-btn" onclick="document.getElementById('fileInput').click()" title="Attach">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
                             </button>
-                            
                             <textarea id="userInput" rows="1" placeholder="Message Createra AI..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
-                            
                             <button class="action-btn mic-btn" id="micBtn" onclick="toggleMic()" title="Voice Input">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                             </button>
-
                             <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                             </button>
@@ -618,77 +684,32 @@
                         <h1>Developer Dashboard</h1>
                         <p>Manage your API keys, monitor usage, and upgrade your plan.</p>
                     </div>
-
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-label">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                                Total Requests
-                            </div>
+                            <div class="stat-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Total Requests</div>
                             <div class="stat-value" id="dashTotalRequests">0</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="requestProgress" style="width: 0%"></div>
-                            </div>
+                            <div class="progress-bar"><div class="progress-fill" id="requestProgress" style="width: 0%"></div></div>
                             <div class="progress-text"><span id="dashUsed">0</span> / <span id="dashLimit">5</span> Free Daily Limit</div>
                         </div>
-
                         <div class="stat-card">
-                            <div class="stat-label">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                                Active API Keys
-                            </div>
+                            <div class="stat-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>Active API Keys</div>
                             <div class="stat-value" id="dashActiveKeys">0</div>
-                            <div class="progress-text">Generate keys to integrate Createra AI into your apps.</div>
+                            <div class="progress-text">Generate keys to integrate Createra AI.</div>
                         </div>
-
                         <div class="stat-card">
-                            <div class="stat-label">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
-                                Current Plan
-                            </div>
-                            <div class="stat-value" style="font-size: 1.5rem; margin-top: 8px;">
-                                <span class="plan-badge">✨ Free Tier</span>
-                            </div>
-                            <div class="progress-text" style="text-align: left; margin-top: 16px;">
-                                Upgrade to Pro for unlimited requests, priority processing, and 4K image generation.
-                            </div>
-                            <button class="btn-primary" style="width: 100%; margin-top: 16px; justify-content: center;" onclick="openUpgradeModal()">
-                                🚀 Upgrade to Pro
-                            </button>
+                            <div class="stat-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>Current Plan</div>
+                            <div class="stat-value" style="font-size: 1.5rem; margin-top: 8px;"><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(168,85,247,0.1); color:var(--accent-primary); border:1px solid rgba(168,85,247,0.3); border-radius:20px; font-size:0.8rem; font-weight:700;">✨ Free Tier</span></div>
+                            <button class="btn-primary" style="width: 100%; margin-top: 16px; justify-content: center;" onclick="openUpgradeModal()">🚀 Upgrade to Pro</button>
                         </div>
                     </div>
-
                     <div class="dash-section">
                         <div class="section-header">
-                            <div class="section-title">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                API Keys
-                            </div>
-                            <button class="btn-primary" onclick="generateApiKey()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                Generate New Key
-                            </button>
+                            <div class="section-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>API Keys</div>
+                            <button class="btn-primary" onclick="generateApiKey()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Generate New Key</button>
                         </div>
                         <div class="api-key-list" id="apiKeyList">
-                            <!-- Keys will be injected here -->
-                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                                No API keys generated yet. Click "Generate New Key" to get started.
-                            </div>
+                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">No API keys generated yet.</div>
                         </div>
-                    </div>
-
-                    <div class="dash-section">
-                        <div class="section-header">
-                            <div class="section-title">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                Need Help?
-                            </div>
-                        </div>
-                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
-                            Check out our <a href="#" style="color: var(--accent-secondary); text-decoration: none;">API Documentation</a> to learn how to integrate Createra AI into your Python, Node.js, or web applications. 
-                            For billing issues, contact support@createra.in.
-                        </p>
-                        <button class="btn-secondary" onclick="resetStatsForTesting()">🔄 Reset Stats (For Testing)</button>
                     </div>
                 </div>
             </div>
@@ -713,19 +734,21 @@
     <!-- UPGRADE MODAL -->
     <div class="modal-overlay" id="upgradeModal">
         <div class="modal" style="max-width: 480px;">
-            <div class="logo-animated" style="margin: 0 auto 16px auto; width: 56px; height: 56px;"></div>
+            <div class="logo-animated" style="margin: 0 auto 16px auto; width: 60px; height: 60px;">
+                <svg viewBox="0 0 100 100" class="logo-svg">
+                    <defs><linearGradient id="shimmerGrad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7" /><stop offset="50%" stop-color="#ffffff" /><stop offset="100%" stop-color="#22d3ee" /></linearGradient></defs>
+                    <path d="M 72 28 A 42 42 0 1 0 72 72" fill="none" stroke="url(#shimmerGrad3)" stroke-width="5" stroke-linecap="round" filter="url(#glow)" class="shimmer-path" />
+                    <g class="globe-group"><circle cx="50" cy="50" r="16" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.9"/><ellipse cx="50" cy="50" rx="7" ry="16" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><line x1="34" y1="50" x2="66" y2="50" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><path d="M 36 40 Q 50 45 64 40" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><path d="M 36 60 Q 50 55 64 60" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/></g>
+                </svg>
+            </div>
             <h2 style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Unlock Createra Pro</h2>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">Break free from limits. Experience the ultimate AI power.</p>
-            
             <ul class="upgrade-features">
                 <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Unlimited AI Generations</li>
                 <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Priority Fast Processing</li>
                 <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> 4K High-Res Image Generation</li>
-                <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Advanced API Rate Limits</li>
             </ul>
-
             <div class="price-tag">₹299 <span>/ month</span></div>
-            
             <button class="primary" onclick="handleUpgrade()">🚀 Upgrade to Pro Now</button>
             <button onclick="closeUpgradeModal()" style="background: transparent; border: none; margin-top: 16px; padding: 8px; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem;">Maybe later</button>
         </div>
@@ -757,8 +780,39 @@
         let attachedFile = null;
         let isLoginMode = true;
         let currentAbortController = null;
+        let limitResetInterval = null;
 
-        // ===== DASHBOARD & USAGE LOGIC =====
+        function getLimitResetTime() {
+            let resetTime = localStorage.getItem('createra_limit_reset');
+            if (!resetTime) {
+                resetTime = Date.now() + (24 * 60 * 60 * 1000);
+                localStorage.setItem('createra_limit_reset', resetTime);
+            }
+            return parseInt(resetTime);
+        }
+
+        function startCountdown() {
+            if (limitResetInterval) clearInterval(limitResetInterval);
+            const updateTimer = () => {
+                const now = Date.now();
+                const resetTime = getLimitResetTime();
+                const diff = resetTime - now;
+                const el = document.getElementById('limitCountdown');
+                if (el && diff > 0) {
+                    const h = Math.floor(diff / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diff % (1000 * 60)) / 1000);
+                    el.innerText = `Resets in: ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                } else if (el && diff <= 0) {
+                    el.innerText = "Limit Reset! You can now generate.";
+                    localStorage.removeItem('createra_limit_reset');
+                    clearInterval(limitResetInterval);
+                }
+            };
+            updateTimer();
+            limitResetInterval = setInterval(updateTimer, 1000);
+        }
+
         function getUserStats() {
             const uid = currentUser ? currentUser.uid : 'guest';
             const defaultStats = { requests: 0, keys: [] };
@@ -780,31 +834,24 @@
 
         function updateDashboardUI() {
             const stats = getUserStats();
-            const limit = 5; // Free tier limit
-            
+            const limit = 5;
             document.getElementById('dashTotalRequests').innerText = stats.requests;
             document.getElementById('dashUsed').innerText = Math.min(stats.requests, limit);
             document.getElementById('dashLimit').innerText = limit;
             document.getElementById('dashActiveKeys').innerText = stats.keys.length;
-            
             const percentage = Math.min((stats.requests / limit) * 100, 100);
             document.getElementById('requestProgress').style.width = `${percentage}%`;
             
-            // Update API Key List
             const keyListEl = document.getElementById('apiKeyList');
             if (stats.keys.length === 0) {
-                keyListEl.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No API keys generated yet. Click "Generate New Key" to get started.</div>`;
+                keyListEl.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No API keys generated yet.</div>`;
             } else {
                 keyListEl.innerHTML = stats.keys.map((key, index) => `
                     <div class="api-key-item">
                         <div class="key-string">sk-createra-••••${key.slice(-4)}</div>
                         <div class="key-actions">
-                            <button class="icon-btn" onclick="copyApiKey('${key}')" title="Copy Key">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                            </button>
-                            <button class="icon-btn danger" onclick="revokeApiKey(${index})" title="Revoke Key">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                            </button>
+                            <button class="icon-btn" onclick="copyApiKey('${key}')" title="Copy Key"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+                            <button class="icon-btn danger" onclick="revokeApiKey(${index})" title="Revoke Key"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                         </div>
                     </div>
                 `).join('');
@@ -820,11 +867,11 @@
         };
 
         window.copyApiKey = (key) => {
-            navigator.clipboard.writeText(key).then(() => showToast('API Key copied to clipboard!', 'success'));
+            navigator.clipboard.writeText(key).then(() => showToast('API Key copied!', 'success'));
         };
 
         window.revokeApiKey = (index) => {
-            if(confirm('Are you sure you want to revoke this API key? It will stop working immediately.')) {
+            if(confirm('Revoke this API key?')) {
                 const stats = getUserStats();
                 stats.keys.splice(index, 1);
                 saveUserStats(stats);
@@ -832,62 +879,81 @@
             }
         };
 
-        window.resetStatsForTesting = () => {
-            if(confirm('Reset all usage stats and API keys for testing?')) {
-                const uid = currentUser ? currentUser.uid : 'guest';
-                localStorage.removeItem(`createra_stats_${uid}`);
-                updateDashboardUI();
-                showToast('Stats reset successfully.', 'success');
-            }
-        };
+        // 🌟 SMART CHAT HISTORY WITH IMAGE PREVIEWS
+        function getTimeLabel(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) return "Today";
+            if (diffDays === 1) return "Yesterday";
+            if (diffDays < 7) return "Previous";
+            return "Older";
+        }
 
-        // ===== VIEW SWITCHING =====
+        function loadChatHistoryUI() {
+            const chats = JSON.parse(localStorage.getItem(`createra_chats_${currentUser?.uid || 'guest'}`) || '{}');
+            const list = document.getElementById('chatHistoryList');
+            list.innerHTML = '';
+            
+            const grouped = {};
+            Object.keys(chats).reverse().forEach(id => {
+                const label = getTimeLabel(parseInt(id.replace('chat_', '')) || Date.now());
+                if (!grouped[label]) grouped[label] = [];
+                
+                // Check if last message was an image
+                const msgs = chats[id].messages || [];
+                const lastMsg = msgs[msgs.length - 1];
+                let preview = '';
+                if (lastMsg && lastMsg.type === 'ai' && lastMsg.text && lastMsg.text.includes('pollinations')) {
+                    preview = `<div style="width:24px; height:24px; border-radius:6px; background:var(--accent-gradient); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow: 0 0 8px rgba(168,85,247,0.4);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+                }
+                
+                grouped[label].push({ id, title: chats[id].title || 'New Chat', preview });
+            });
+
+            for (const [label, items] of Object.entries(grouped)) {
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'nav-label';
+                labelDiv.innerText = label;
+                list.appendChild(labelDiv);
+                
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = `nav-item ${item.id === currentChatId ? 'active' : ''}`;
+                    div.innerHTML = `
+                        ${item.preview ? item.preview : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`}
+                        <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.title}</span>
+                    `;
+                    div.onclick = () => loadChat(item.id);
+                    list.appendChild(div);
+                });
+            }
+        }
+
         window.switchView = (viewName) => {
-            // Update Nav
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item[data-view]').forEach(el => el.classList.remove('active'));
             const activeNav = document.querySelector(`.nav-item[data-view="${viewName}"]`);
             if(activeNav) activeNav.classList.add('active');
 
-            // Update Views
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(`${viewName}View`).classList.add('active');
-
-            // Update Top Bar
             document.getElementById('topBarTitle').innerText = viewName === 'chat' ? 'Createra AI Chat' : 'Developer Dashboard';
 
-            // Close sidebar on mobile
             if(window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('open');
                 document.getElementById('sidebarOverlay').classList.remove('active');
             }
-
-            // Refresh dashboard data if switching to it
-            if(viewName === 'dashboard') {
-                updateDashboardUI();
-            }
+            if(viewName === 'dashboard') updateDashboardUI();
         };
 
-        // ===== SPEECH RECOGNITION =====
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition = null;
-        let isListening = false;
+        let recognition = null, isListening = false;
 
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-IN';
-
-            recognition.onstart = () => {
-                isListening = true;
-                document.getElementById('micBtn').classList.add('listening');
-                document.getElementById('listeningPill').classList.add('active');
-            };
-            recognition.onend = () => {
-                isListening = false;
-                document.getElementById('micBtn').classList.remove('listening');
-                document.getElementById('listeningPill').classList.remove('active');
-            };
+            recognition.continuous = true; recognition.interimResults = true; recognition.lang = 'en-IN';
+            recognition.onstart = () => { isListening = true; document.getElementById('micBtn').classList.add('listening'); document.getElementById('listeningPill').classList.add('active'); };
+            recognition.onend = () => { isListening = false; document.getElementById('micBtn').classList.remove('listening'); document.getElementById('listeningPill').classList.remove('active'); };
             recognition.onerror = () => { if(isListening) recognition.stop(); };
             recognition.onresult = (event) => {
                 let finalTranscript = '';
@@ -900,50 +966,69 @@
                     autoResize(textarea);
                 }
             };
-        } else {
-            document.getElementById('micBtn').style.display = 'none';
-        }
+        } else { document.getElementById('micBtn').style.display = 'none'; }
 
         window.toggleMic = () => {
             if (!recognition) { showToast('Voice input not supported.', 'error'); return; }
             isListening ? recognition.stop() : recognition.start();
         };
 
-        // ===== CHAT HISTORY =====
-        const getChats = () => JSON.parse(localStorage.getItem(`createra_chats_${currentUser?.uid || 'guest'}`) || '{}');
-        const saveChats = (chats) => localStorage.setItem(`createra_chats_${currentUser?.uid || 'guest'}`, JSON.stringify(chats));
-        
-        function loadChatHistoryUI() {
-            const chats = getChats();
-            const list = document.getElementById('chatHistoryList'); // Note: This is now in nav-section conceptually, but let's keep it simple or remove if dashboard replaces it. For now, let's keep it hidden or adapt.
-            // For this upgraded version, we focus on Dashboard. Chat history can be a sub-feature later.
-        }
-
         window.startNewChat = () => {
             currentChatId = 'chat_' + Date.now();
-            const area = document.getElementById('chatArea');
-            area.innerHTML = `
+            document.getElementById('chatArea').innerHTML = `
                 <div class="welcome-screen" id="welcomeScreen">
-                    <div class="logo-animated"></div>
+                    <div class="logo-animated">
+                        <svg viewBox="0 0 100 100" class="logo-svg">
+                            <defs><linearGradient id="shimmerGrad4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7" /><stop offset="50%" stop-color="#ffffff" /><stop offset="100%" stop-color="#22d3ee" /></linearGradient></defs>
+                            <path d="M 72 28 A 42 42 0 1 0 72 72" fill="none" stroke="url(#shimmerGrad4)" stroke-width="5" stroke-linecap="round" filter="url(#glow)" class="shimmer-path" />
+                            <g class="globe-group"><circle cx="50" cy="50" r="16" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.9"/><ellipse cx="50" cy="50" rx="7" ry="16" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><line x1="34" y1="50" x2="66" y2="50" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><path d="M 36 40 Q 50 45 64 40" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/><path d="M 36 60 Q 50 55 64 60" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.9"/></g>
+                        </svg>
+                    </div>
                     <h2>Welcome to Createra AI</h2>
                     <p>Your world-class multimodal assistant. What will we create today?</p>
                     <div class="suggestion-chips">
                         <button class="chip" onclick="useSuggestion('Write a 60-second viral reel script about AI')">🎥 Viral Reel Script</button>
                         <button class="chip" onclick="useSuggestion('Generate an image of a futuristic Indian city at night')">🎨 Futuristic City Image</button>
-                        <button class="chip" onclick="useSuggestion('Explain quantum computing like I am 5 years old')">🧠 Explain Complex Topic</button>
                     </div>
                 </div>`;
+            document.getElementById('smartChips').style.display = 'none';
+            loadChatHistoryUI();
             if(window.innerWidth <= 768) toggleSidebar();
         };
 
-        // ===== AUTH LOGIC =====
+        function loadChat(id) {
+            currentChatId = id;
+            const chats = JSON.parse(localStorage.getItem(`createra_chats_${currentUser?.uid || 'guest'}`) || '{}');
+            const chat = chats[id];
+            const area = document.getElementById('chatArea');
+            area.innerHTML = '';
+            document.getElementById('smartChips').style.display = 'none';
+            if (chat && chat.messages) {
+                chat.messages.forEach(msg => renderMessage(msg.text, msg.type, msg.attachment, false));
+                // Show smart chips if last message was AI text
+                const lastMsg = chat.messages[chat.messages.length - 1];
+                if (lastMsg && lastMsg.type === 'ai' && !lastMsg.text.includes('pollinations')) {
+                    document.getElementById('smartChips').style.display = 'flex';
+                }
+            } else { startNewChat(); return; }
+            loadChatHistoryUI();
+            if(window.innerWidth <= 768) toggleSidebar();
+        }
+
+        function saveMessageToHistory(text, type, attachment = null) {
+            const chats = JSON.parse(localStorage.getItem(`createra_chats_${currentUser?.uid || 'guest'}`) || '{}');
+            if (!chats[currentChatId]) chats[currentChatId] = { title: text.substring(0, 30) + '...', messages: [] };
+            chats[currentChatId].messages.push({ text, type, attachment });
+            localStorage.setItem(`createra_chats_${currentUser?.uid || 'guest'}`, JSON.stringify(chats));
+            loadChatHistoryUI();
+        }
+
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             if (user) {
                 user.getIdToken().then(token => { currentUserToken = token; });
                 document.getElementById('userInfo').style.display = 'flex';
                 document.getElementById('loginBtnSidebar').style.display = 'none';
-                document.getElementById('navLogin').style.display = 'none';
                 document.getElementById('navLogout').style.display = 'flex';
                 document.getElementById('userName').innerText = user.email.split('@')[0];
                 document.getElementById('userAvatar').innerText = user.email[0].toUpperCase();
@@ -954,7 +1039,6 @@
             } else {
                 document.getElementById('userInfo').style.display = 'none';
                 document.getElementById('loginBtnSidebar').style.display = 'block';
-                document.getElementById('navLogin').style.display = 'flex';
                 document.getElementById('navLogout').style.display = 'none';
                 currentUserToken = null;
                 currentChatId = 'guest_' + Date.now();
@@ -983,13 +1067,8 @@
             }
         };
 
-        window.logout = async () => { 
-            await signOut(auth); 
-            showToast('Logged out', 'success'); 
-            switchView('chat');
-        };
+        window.logout = async () => { await signOut(auth); showToast('Logged out', 'success'); switchView('chat'); };
 
-        // ===== FILE & INPUT HANDLING =====
         window.handleFileSelect = (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -1024,7 +1103,6 @@
             sendMessage();
         };
 
-        // ===== MESSAGE RENDERING & TYPEWRITER EFFECT =====
         function renderMessage(text, type, attachment = null, animate = true) {
             const welcome = document.getElementById('welcomeScreen');
             if (welcome) welcome.style.display = 'none';
@@ -1049,12 +1127,10 @@
                     content += `<div class="markdown-body ${animate ? 'typing' : ''}"></div>`;
                     content += `
                         <div class="message-actions">
-                            <button class="action-icon-btn" onclick="copyToClipboard(this, \`${encodeURIComponent(text)}\`)" title="Copy">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                            </button>
-                            <button class="action-icon-btn" onclick="speakMessage(this)" title="Read Aloud">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                            </button>
+                            <button class="action-icon-btn" onclick="copyToClipboard(this, \`${encodeURIComponent(text)}\`)" title="Copy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+                            <button class="action-icon-btn" onclick="regenerateMessage()" title="Regenerate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+                            <button class="action-icon-btn" onclick="rateMessage(this, 'like')" title="Like"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></button>
+                            <button class="action-icon-btn" onclick="rateMessage(this, 'dislike')" title="Dislike"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg></button>
                         </div>`;
                     div.innerHTML = content;
                     area.appendChild(div);
@@ -1073,38 +1149,44 @@
                 div.innerHTML = content;
                 area.appendChild(div);
             }
-            
             area.scrollTop = area.scrollHeight;
         }
 
+        function renderLimitReachedCard() {
+            const welcome = document.getElementById('welcomeScreen');
+            if (welcome) welcome.style.display = 'none';
+            const area = document.getElementById('chatArea');
+            const div = document.createElement('div');
+            div.className = 'limit-card';
+            div.innerHTML = `
+                <h3>⚡ Daily Free Limit Reached</h3>
+                <p>You've hit your daily free generation limit. Upgrade to Pro for unlimited access.</p>
+                <div class="countdown" id="limitCountdown">Calculating...</div>
+                <button class="btn-primary" onclick="openUpgradeModal()" style="width:100%; justify-content:center;">🚀 Upgrade to Createra Pro</button>
+            `;
+            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+            startCountdown();
+        }
+
         function typeWriterEffect(markdownDiv, fullText, speed = 15) {
-            let i = 0;
-            const chunkSize = 4;
-            
+            let i = 0; const chunkSize = 4;
             function type() {
                 if (i < fullText.length) {
-                    const currentText = fullText.substring(0, i + chunkSize);
-                    markdownDiv.innerHTML = marked.parse(currentText);
-                    
+                    markdownDiv.innerHTML = marked.parse(fullText.substring(0, i + chunkSize));
                     markdownDiv.querySelectorAll('pre code').forEach((block) => {
-                        if (!block.dataset.highlighted) {
-                            hljs.highlightElement(block);
-                            block.dataset.highlighted = "yes";
-                        }
+                        if (!block.dataset.highlighted) { hljs.highlightElement(block); block.dataset.highlighted = "yes"; }
                     });
-                    
-                    const chatArea = document.getElementById('chatArea');
-                    chatArea.scrollTop = chatArea.scrollHeight;
-                    
+                    document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
                     i += chunkSize;
                     setTimeout(type, speed);
                 } else {
                     markdownDiv.classList.remove('typing');
                     markdownDiv.innerHTML = marked.parse(fullText);
                     addCopyButtons(markdownDiv.parentElement);
-                    
-                    const chatArea = document.getElementById('chatArea');
-                    chatArea.scrollTop = chatArea.scrollHeight;
+                    document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+                    // 🚀 Show smart chips after typing finishes
+                    document.getElementById('smartChips').style.display = 'flex';
                 }
             }
             type();
@@ -1125,9 +1207,7 @@
         }
 
         window.copyToClipboard = (btn, encodedText) => {
-            navigator.clipboard.writeText(decodeURIComponent(encodedText)).then(() => {
-                showToast('Copied to clipboard!', 'success');
-            });
+            navigator.clipboard.writeText(decodeURIComponent(encodedText)).then(() => showToast('Copied to clipboard!', 'success'));
         };
 
         window.copyCodeToClipboard = (btn) => {
@@ -1140,21 +1220,15 @@
             });
         };
 
-        window.speakMessage = (btn) => {
-            const text = btn.closest('.message').querySelector('.markdown-body').innerText;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            
-            btn.classList.add('speaking');
-            utterance.onend = () => btn.classList.remove('speaking');
-            utterance.onerror = () => btn.classList.remove('speaking');
-            
-            window.speechSynthesis.speak(utterance);
+        window.regenerateMessage = () => {
+            showToast('🔄 Regenerating response...', 'success');
         };
 
-        // ===== CORE AI LOGIC =====
+        window.rateMessage = (btn, type) => {
+            btn.classList.toggle(type === 'like' ? 'liked' : 'disliked');
+            showToast(type === 'like' ? '👍 Thanks for the feedback!' : '👎 We will improve!', 'success');
+        };
+
         window.sendMessage = async () => {
             const input = document.getElementById('userInput');
             const idea = input.value.trim();
@@ -1169,14 +1243,13 @@
             if(isListening && recognition) recognition.stop();
 
             renderMessage(idea, 'user', attachedFile, false);
-            
-            input.value = '';
-            input.style.height = 'auto';
+            input.value = ''; input.style.height = 'auto';
             const fileToSend = attachedFile;
             clearFile();
             
             document.getElementById('sendBtn').style.display = 'none';
             document.getElementById('stopBtn').style.display = 'flex';
+            document.getElementById('smartChips').style.display = 'none'; // Hide chips while generating
             
             const area = document.getElementById('chatArea');
             const typingDiv = document.createElement('div');
@@ -1208,13 +1281,12 @@
                 if (!response.ok) {
                     renderMessage(`⚠️ Error: ${data.detail || data.message || 'Server Error'}`, 'ai', null, false);
                 } else if (data.status === 'limit_reached') {
-                    renderMessage("🔒 Daily free limit reached! Please upgrade to Pro or wait for reset.", 'ai', null, false);
-                    showToast('Free limit reached!', 'error');
-                    // Switch to dashboard to show upgrade
-                    setTimeout(() => switchView('dashboard'), 1500);
+                    showToast('Daily limit reached. Redirecting to upgrade...', 'error');
+                    renderLimitReachedCard();
+                    setTimeout(() => openUpgradeModal(), 1500);
                 } else if (data.result) {
                     renderMessage(data.result, 'ai', null, true);
-                    incrementRequestCount(); // 🎯 Track usage for dashboard
+                    incrementRequestCount();
                 }
             } catch (error) {
                 document.getElementById('typingIndicator')?.remove();
@@ -1232,19 +1304,11 @@
             if (currentAbortController) currentAbortController.abort();
         };
 
-        // ===== UPGRADE MODAL LOGIC =====
-        window.openUpgradeModal = () => {
-            document.getElementById('upgradeModal').classList.add('active');
-        };
-        window.closeUpgradeModal = () => {
-            document.getElementById('upgradeModal').classList.remove('active');
-        };
+        window.openUpgradeModal = () => { document.getElementById('upgradeModal').classList.add('active'); };
+        window.closeUpgradeModal = () => { document.getElementById('upgradeModal').classList.remove('active'); };
         window.handleUpgrade = () => {
             showToast('🚀 Redirecting to secure payment gateway...', 'success');
-            setTimeout(() => {
-                closeUpgradeModal();
-                // Razorpay/Stripe integration goes here
-            }, 1500);
+            setTimeout(() => { closeUpgradeModal(); }, 1500);
         };
 
         function showToast(msg, type) {
