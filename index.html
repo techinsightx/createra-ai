@@ -55,7 +55,7 @@
             100% { background-position: 0% 10%, 100% 10%, 0 0, 0 0; }
         }
 
-        /* 🌟 PURE CSS LOGO (NO SVG) */
+        /* 🌟 PURE CSS LOGO WITH PERFECT C ROTATION */
         .logo-animated {
             width: 44px; height: 44px; border-radius: 12px;
             background: var(--bg-secondary); 
@@ -70,8 +70,11 @@
             border: 6px solid transparent;
             border-top-color: #a855f7;
             border-right-color: #22d3ee;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
             border-radius: 50%;
             position: absolute;
+            transform: rotate(-45deg); /* Perfect C orientation */
             animation: shimmerRotate 3s ease-in-out infinite alternate;
             filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.5));
         }
@@ -92,8 +95,8 @@
         .logo-globe::after { width: 18px; height: 6px; }
         
         @keyframes shimmerRotate {
-            0% { transform: rotate(-45deg); opacity: 0.8; }
-            100% { transform: rotate(45deg); opacity: 1; }
+            0% { transform: rotate(-45deg) scale(0.95); opacity: 0.8; }
+            100% { transform: rotate(-45deg) scale(1.05); opacity: 1; }
         }
         @keyframes spinGlobe { 100% { transform: rotate(360deg); } }
 
@@ -128,11 +131,14 @@
         .nav-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary); }
         .nav-item.active { background: rgba(168, 85, 247, 0.1); color: var(--accent-primary); border: 1px solid rgba(168, 85, 247, 0.3); }
         
-        /* Pure CSS Icons using clip-path/borders */
+        /* Pure CSS Icons */
         .icon-chat { width: 18px; height: 18px; border: 2px solid currentColor; border-radius: 4px; position: relative; }
         .icon-chat::after { content:''; position:absolute; bottom:-4px; right:4px; width:6px; height:6px; background:currentColor; clip-path:polygon(0 0, 100% 0, 0 100%); }
         .icon-dash { width: 18px; height: 18px; display:grid; grid-template-columns:1fr 1fr; gap:2px; }
         .icon-dash div { background:currentColor; border-radius:2px; }
+        .icon-history { width: 18px; height: 18px; border: 2px solid currentColor; border-radius: 50%; position: relative; }
+        .icon-history::before { content:''; position:absolute; top:2px; left:50%; transform:translateX(-50%); width:2px; height:5px; background:currentColor; }
+        .icon-history::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(45deg); width:6px; height:2px; background:currentColor; }
 
         .sidebar-footer { padding: 16px; border-top: 1px solid var(--border-color); }
         
@@ -568,6 +574,8 @@
                 <div class="icon-dash"><div></div><div></div><div></div><div></div></div>
                 Dashboard
             </div>
+            
+            <!-- 📜 HISTORY TAB RESTORED -->
             <div class="nav-label" id="historyLabel">History</div>
             <div id="chatHistoryList"></div>
         </div>
@@ -663,9 +671,12 @@
                                 </div>
                             </button>
                             <textarea id="userInput" rows="1" placeholder="Message Createra AI..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+                            
+                            <!--  VISIBLE MIC BUTTON -->
                             <button class="action-btn mic-btn" id="micBtn" onclick="toggleMic()" title="Voice Input">
                                 <div class="mic-icon"></div>
                             </button>
+                            
                             <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                                 <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid white;"></div>
                             </button>
@@ -758,7 +769,7 @@
                 <li><div style="width:20px;height:20px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;">✓</div> Priority Fast Processing</li>
                 <li><div style="width:20px;height:20px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;">✓</div> 4K High-Res Image Generation</li>
             </ul>
-            <div class="price-tag">999 <span>/ month</span></div>
+            <div class="price-tag">₹999 <span>/ month</span></div>
             <button class="primary" onclick="handleUpgrade()"> Upgrade to Pro Now</button>
             <button onclick="closeUpgradeModal()" style="background: transparent; border: none; margin-top: 16px; padding: 8px; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem;">Maybe later</button>
         </div>
@@ -887,6 +898,7 @@
             }
         };
 
+        // 📜 SMART CHAT HISTORY GROUPING
         function getTimeLabel(timestamp) {
             const date = new Date(timestamp);
             const now = new Date();
@@ -927,7 +939,7 @@
                     const div = document.createElement('div');
                     div.className = `nav-item ${item.id === currentChatId ? 'active' : ''}`;
                     div.innerHTML = `
-                        ${item.preview ? item.preview : `<div class="icon-chat" style="width:16px;height:16px;"></div>`}
+                        ${item.preview ? item.preview : `<div class="icon-history" style="width:16px;height:16px;"></div>`}
                         <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.title}</span>
                     `;
                     div.onclick = () => loadChat(item.id);
@@ -991,7 +1003,7 @@
                     <p>Your world-class multimodal assistant. What will we create today?</p>
                     <div class="suggestion-chips">
                         <button class="chip" onclick="useSuggestion('Write a 60-second viral reel script about AI')"> Viral Reel Script</button>
-                        <button class="chip" onclick="useSuggestion('Generate an image of a futuristic Indian city at night')">🎨 Futuristic City Image</button>
+                        <button class="chip" onclick="useSuggestion('Generate an image of a futuristic Indian city at night')"> Futuristic City Image</button>
                     </div>
                 </div>`;
             document.getElementById('smartChips').style.display = 'none';
@@ -1106,7 +1118,8 @@
         };
 
         // 🎬 CINEMATIC SCRIPT PREVIEW
-        window.openPreview = (text) => {
+        window.openPreview = (encodedText) => {
+            const text = decodeURIComponent(encodedText);
             const modal = document.getElementById('previewModal');
             const body = document.getElementById('previewBody');
             
@@ -1235,7 +1248,7 @@
             const div = document.createElement('div');
             div.className = `message ${type}`;
             
-            let content = `<div class="label">${type === 'user' ? 'YOU' : ' CREATERA AI'}</div>`;
+            let content = `<div class="label">${type === 'user' ? 'YOU' : '⚡ CREATERA AI'}</div>`;
             if (attachment) {
                 if (attachment.type.startsWith('image/')) content += `<img src="${attachment.base64}" alt="Attachment">`;
                 else content += `<div class="attachment-preview">📄 ${attachment.name}</div>`;
@@ -1404,7 +1417,7 @@
                 document.getElementById('typingIndicator')?.remove();
 
                 if (!response.ok) {
-                    renderMessage(`⚠️ Error: ${data.detail || data.message || 'Server Error'}`, 'ai', null, false);
+                    renderMessage(`️ Error: ${data.detail || data.message || 'Server Error'}`, 'ai', null, false);
                 } else if (data.status === 'limit_reached') {
                     showToast('Daily limit reached. Redirecting to upgrade...', 'error');
                     renderLimitReachedCard();
@@ -1415,7 +1428,7 @@
                 }
             } catch (error) {
                 document.getElementById('typingIndicator')?.remove();
-                if (error.name === 'AbortError') renderMessage('⏹️ Generation stopped.', 'ai', null, false);
+                if (error.name === 'AbortError') renderMessage('️ Generation stopped.', 'ai', null, false);
                 else renderMessage('️ Network error. Check connection.', 'ai', null, false);
             } finally {
                 currentAbortController = null;
