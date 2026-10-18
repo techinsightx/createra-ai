@@ -591,7 +591,7 @@
                         <span class="remove-file" onclick="clearFile()">✕</span>
                     </div>
                     <div class="smart-chips-container" id="smartChips" style="display: none;">
-                        <button class="smart-chip" onclick="useSuggestion('Make it shorter and more impactful')">📝 Make it shorter</button>
+                        <button class="smart-chip" onclick="useSuggestion('Make it shorter and more impactful')"> Make it shorter</button>
                         <button class="smart-chip" onclick="useSuggestion('Translate this to Hindi')"> Translate to Hindi</button>
                         <button class="smart-chip" onclick="useSuggestion('Give me 3 more examples like this')">💡 More examples</button>
                     </div>
@@ -606,7 +606,7 @@
                             </select>
                             <select id="format">
                                 <option value="detailed_script">📝 Script</option>
-                                <option value="reel_script">🎥 Reel</option>
+                                <option value="reel_script"> Reel</option>
                                 <option value="blog_post">📰 Blog</option>
                                 <option value="image_gen">🎨 Image</option>
                             </select>
@@ -699,7 +699,7 @@
                 <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Priority Fast Processing</li>
                 <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> 4K High-Res Image Generation</li>
             </ul>
-            <div class="price-tag">₹299 <span>/ month</span></div>
+            <div class="price-tag">₹999 <span>/ month</span></div>
             <button class="primary" onclick="handleUpgrade()"> Upgrade to Pro Now</button>
             <button onclick="closeUpgradeModal()" style="background: transparent; border: none; margin-top: 16px; padding: 8px; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem;">Maybe later</button>
         </div>
@@ -935,7 +935,7 @@
                     <h2>Welcome to Createra AI</h2>
                     <p>Your world-class multimodal assistant. What will we create today?</p>
                     <div class="suggestion-chips">
-                        <button class="chip" onclick="useSuggestion('Write a 60-second viral reel script about AI')">🎥 Viral Reel Script</button>
+                        <button class="chip" onclick="useSuggestion('Write a 60-second viral reel script about AI')"> Viral Reel Script</button>
                         <button class="chip" onclick="useSuggestion('Generate an image of a futuristic Indian city at night')">🎨 Futuristic City Image</button>
                     </div>
                 </div>`;
@@ -1050,12 +1050,11 @@
             sendMessage();
         };
 
-        // 🎤 PREMIUM TTS WITH KARAOKE HIGHLIGHTING
+        // 🎤 PREMIUM TTS WITH KARAOKE HIGHLIGHTING (HINDI SUPPORTED)
         window.speakMessage = (btn) => {
             const messageDiv = btn.closest('.message');
             const markdownBody = messageDiv.querySelector('.markdown-body');
             
-            // If already speaking, stop it
             if (btn.classList.contains('speaking')) {
                 window.speechSynthesis.cancel();
                 btn.classList.remove('speaking');
@@ -1063,7 +1062,6 @@
                 return;
             }
 
-            // Cancel any ongoing speech
             window.speechSynthesis.cancel();
             document.querySelectorAll('.action-icon-btn.speaking').forEach(b => b.classList.remove('speaking'));
             document.querySelectorAll('.tts-active').forEach(el => el.classList.remove('tts-active'));
@@ -1073,11 +1071,9 @@
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
-            // Prepare word spans for highlighting
             const wordSpans = [];
             let charCount = 0;
             
-            // We wrap text nodes in spans to track them
             const walker = document.createTreeWalker(markdownBody, NodeFilter.SHOW_TEXT, null, false);
             let node;
             const textNodes = [];
@@ -1086,7 +1082,8 @@
             }
 
             textNodes.forEach(textNode => {
-                const words = textNode.textContent.split(/(\s+)/);
+                // Unicode-aware split for Hindi/English mixed text
+                const words = textNode.textContent.match(/[\p{L}\p{N}]+|[^\p{L}\p{N}]+/gu) || [];
                 const fragment = document.createDocumentFragment();
                 words.forEach(word => {
                     if (word.trim().length > 0) {
@@ -1114,8 +1111,6 @@
                     if (activeSpan) {
                         document.querySelectorAll('.tts-active').forEach(s => s.classList.remove('tts-active'));
                         activeSpan.classList.add('tts-active');
-                        // Smooth scroll to keep active word in view if needed
-                        // activeSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 }
             };
